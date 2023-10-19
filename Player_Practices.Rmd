@@ -1,0 +1,305 @@
+---
+title: "Player_Practices"
+author: "Greg"
+date: "2023-10-06"
+output: html_document
+---
+
+**Add most recent days data frame add top, add to list of functions below, use inspect to change data name up 1 to match that days practice #**
+**3 things to do**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/23-24UMassMBBPractice")
+```
+
+#packages
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+#read data
+```{r} 
+#add here
+data22 <- read.csv('10-19-2023 | Practice Stats.csv')
+data21 <- read.csv('10-18-2023 | Practice Stats.csv')
+data20 <- read.csv('10-14-2023 | Practice Stats.csv')
+data19 <- read.csv('10-13-2023 | Practice Stats.csv')
+data18 <- read.csv('10-12-2023 | Practice Stats.csv')
+data17 <- read.csv('10-10-2023 | Practice Stats.csv')
+data16 <- read.csv('10-09-2023 | Practice Stats.csv')
+data15 <- read.csv('10-06-2023 | Practice Stats.csv')
+data14 <- read.csv('10-05-2023 | Practice Stats.csv')
+data13 <- read.csv('10-03-2023 | Practice Stats.csv')
+data12 <- read.csv('10-02-2023 | Practice Stats.csv')
+data11 <- read.csv('09-30-2023 | Practice Stats.csv')
+data10 <- read.csv('09-28-2023 | Practice Stats.csv')
+data9 <- read.csv('09-26-2023 | Practice Stats.csv')
+data8 <- read.csv('09-25-2023 | Practice Stats.csv')
+data7 <- read.csv('09-21-2023 | Practice Stats.csv')
+data6 <- read.csv('09-20-2023 | Practice Stats.csv')
+data5 <- read.csv('09-19-2023 | Practice Stats.csv')
+data4 <- read.csv('09-18-2023 | Practice Stats.csv')
+data3 <- read.csv('09-15-2023 | Practice Stats.csv')
+data2 <- read.csv('09-14-2023 | Practice Stats.csv')
+data1 <- read.csv('09-13-2023 | Practice Stats.csv')
+```
+
+#fix data
+```{r}
+fix_df <- function(df) {
+  df <- df[,-1:-2]
+  rim_values <- strsplit(df$Rim, '/')
+  df$rim_m <- as.numeric(sapply(rim_values, "[[", 1))
+  df$rim_a <- as.numeric(sapply(rim_values, "[[", 2))
+  mid_values <- strsplit(df$Mid, '/')
+  df$mid_m <- as.numeric(sapply(mid_values, "[[", 1))
+  df$mid_a <- as.numeric(sapply(mid_values, "[[", 2))
+  three_values <- strsplit(df$Three, '/')
+  df$three_m <- as.numeric(sapply(three_values, "[[", 1))
+  df$three_a <- as.numeric(sapply(three_values, "[[", 2))
+  df <- df[,c(-5,-7,-9)]
+  df <- df[,-5:-7]
+  return(df)
+}
+
+#add here
+data22 <- fix_df(data22)
+data21 <- fix_df(data21)
+data20 <- fix_df(data20)
+data19 <- fix_df(data19)
+data18 <- fix_df(data18)
+data17 <- fix_df(data17)
+data16 <- fix_df(data16)
+data15 <- fix_df(data15)
+data14 <- fix_df(data14)
+data13 <- fix_df(data13)
+data12 <- fix_df(data12)
+data11 <- fix_df(data11)
+data10 <- fix_df(data10)
+data9 <- fix_df(data9)
+data8 <- fix_df(data8)
+data7 <- fix_df(data7)
+data6 <- fix_df(data6)
+data5 <- fix_df(data5)
+data4 <- fix_df(data4)
+data3 <- fix_df(data3)
+data2 <- fix_df(data2)
+data1 <- fix_df(data1)
+```
+
+#another function
+```{r}
+function1 <- function(df) {
+  df$Practice <- NA
+  df <- df %>%
+    mutate(
+      'FG.' = round(((rim_m+mid_m+three_m)/(rim_a+mid_a+three_a))*100,1),
+      'eFG.' = round((((rim_m+mid_m+three_m) + (0.5*three_m))/(rim_a+mid_a+three_a))*100,1),
+      'Rim.' = round(((rim_m)/(rim_a))*100,1),
+      'Mid.' = round(((mid_m)/(mid_a))*100,1),
+      'X2pt.' = round(((rim_m+mid_m)/(rim_a+mid_a))*100,1),
+      'X3pt.' = round(((three_m)/(three_a))*100,1),
+      'Rim.Attempts.per.100.FGA' = round(((rim_a)/(rim_a+mid_a+three_a))*100,1),
+      'Mid.Attempts.per.100.FGA' = round(((mid_a)/(rim_a+mid_a+three_a))*100,1),
+      'X3pt.Attempts.per.100.FGA' = round(((three_a)/(rim_a+mid_a+three_a))*100,1),
+      'Ast.per.100.Tov' = round(((Ast)/(Tov))*100,1),
+      'Ast.per.100.FGA' = round(((Ast)/(rim_a+mid_a+three_a))*100,1),
+      'Points.per.Shot' = round(((Pts)/(rim_a+mid_a+three_a))*100,1),
+      'FGA' = (rim_a+mid_a+three_a),
+      'FGM' = (rim_m+mid_m+three_m)
+    )
+  df <- df %>%
+    rename(
+      'Points' = 'Pts',
+      'Rebounds' = 'Reb',
+      'Assists' = 'Ast',
+      'Off..Reb' = 'Off_Reb',
+      'Def..Reb' = 'Def_Reb',
+      'Steals' = 'Stl',
+      'Blocks' = 'Blk',
+      'Turnovers' = 'Tov',
+      'Charges' = 'Charges',
+      'Fouls' = 'Fouls',
+      'Rim.Makes' = 'rim_m',
+      'Mid.Makes' = 'mid_m',
+      'X3pt.Makes' = 'three_m',
+      'Rim.Attempts' = 'rim_a',
+      'Mid.Attempts' = 'mid_a',
+      'X3pt.Attempts' = 'three_a'
+    )
+  df <- df %>%
+    select(Practice, Points, Rebounds, Assists, 'FG.', FGA, FGM, 'eFG.', 'Rim.Makes', 'Rim.Attempts', 'Rim.', 'Rim.Attempts.per.100.FGA', 'Mid.Makes', 'Mid.Attempts', 'Mid.', 'Mid.Attempts.per.100.FGA', 'X2pt.', 'X3pt.Makes', 'X3pt.Attempts', 'X3pt.', 'X3pt.Attempts.per.100.FGA', 'Off..Reb', 'Def..Reb', 'Steals', 'Blocks', 'Turnovers', 'Charges', 'Fouls', 'Ast.per.100.Tov', 'Ast.per.100.FGA', 'Points.per.Shot')
+}
+```
+
+#filter and create
+```{r}
+#change data name up 1 all in here
+
+data22 <- function1(data22)
+
+Rollie <- read.csv('Rollie Castineyra | Practice Progress.csv')
+Rollie <- Rollie[,-1]
+Rollie <- rbind(Rollie, (data22[1,]+tail(Rollie,1)))
+
+Josh <- read.csv('Josh Cohen | Practice Progress.csv')
+Josh <- Josh[,-1]
+Josh <- rbind(Josh, (data22[2,]+tail(Josh,1)))
+
+Jackson <- read.csv('Jackson Cronin | Practice Progress.csv')
+Jackson <- Jackson[,-1]
+Jackson <- rbind(Jackson, (data22[3,]+tail(Jackson,1)))
+
+Matt <- read.csv('Matt Cross | Practice Progress.csv')
+Matt <- Matt[,-1]
+Matt <- rbind(Matt, (data22[4,]+tail(Matt,1)))
+
+Jaylen <- read.csv('Jaylen Curry | Practice Progress.csv')
+Jaylen <- Jaylen[,-1]
+Jaylen <- rbind(Jaylen, (data22[5,]+tail(Jaylen,1)))
+
+Rob <- read.csv('Robert Davis Jr. | Practice Progress.csv')
+Rob <- Rob[,-1]
+Rob <- rbind(Rob, (data22[6,]+tail(Rob,1)))
+
+Sool <- read.csv('Rahsool Diggins | Practice Progress.csv')
+Sool <- Sool[,-1]
+Sool <- rbind(Sool, (data22[7,]+tail(Sool,1)))
+
+Tarique <- read.csv('Tarique Foster | Practice Progress.csv')
+Tarique <- Tarique[,-1]
+Tarique <- rbind(Tarique, (data22[8,]+tail(Tarique,1)))
+
+Dan <- read.csv('Daniel Hankins-Sanford | Practice Progress.csv')
+Dan <- Dan[,-1]
+Dan <- rbind(Dan, (data22[9,]+tail(Dan,1)))
+
+Mathok <- read.csv('Mathok Majok | Practice Progress.csv')
+Mathok <- Mathok[,-1]
+Mathok <- rbind(Mathok, (data22[10,]+tail(Mathok,1)))
+
+Ryan <- read.csv('Ryan Marcus | Practice Progress.csv')
+Ryan <- Ryan[,-1]
+Ryan <- rbind(Ryan, (data22[11,]+tail(Ryan,1)))
+
+Sawyer <- read.csv('Sawyer Mayhugh | Practice Progress.csv')
+Sawyer <- Sawyer[,-1]
+Sawyer <- rbind(Sawyer, (data22[12,]+tail(Sawyer,1)))
+
+Jayden <- read.csv('Jayden Ndjigue | Practice Progress.csv')
+Jayden <- Jayden[,-1]
+Jayden <- rbind(Jayden, (data22[13,]+tail(Jayden,1)))
+
+Keon <- read.csv('Keon Thompson | Practice Progress.csv')
+Keon <- Keon[,-1]
+Keon <- rbind(Keon, (data22[14,]+tail(Keon,1)))
+
+Marqui <- read.csv('Marqui Worthy | Practice Progress.csv')
+Marqui <- Marqui[,-1]
+Marqui <- rbind(Marqui, (data22[15,]+tail(Marqui,1)))
+
+Total <- read.csv('Full Team | Practice Progress.csv')
+Total <- Total[,-1]
+Total <- rbind(Total, (data22[16,]+tail(Total,1)))
+```
+
+#finishing function
+```{r}
+finish <- function(df) {
+  df$Practice <- seq_along(df[,1])
+  df <- df %>%
+    mutate(
+      'FG%' = round(((Rim.Makes+Mid.Makes+X3pt.Makes)/(Rim.Attempts+Mid.Attempts+X3pt.Attempts))*100,1),
+      'eFG%' = round((((Rim.Makes+Mid.Makes+X3pt.Makes) + (0.5*X3pt.Makes))/(Rim.Attempts+Mid.Attempts+X3pt.Attempts))*100,1),
+      'Rim%' = round(((Rim.Makes)/(Rim.Attempts))*100,1),
+      'Mid%' = round(((Mid.Makes)/(Mid.Attempts))*100,1),
+      '2pt%' = round(((Rim.Makes+Mid.Makes)/(Rim.Attempts+Mid.Attempts))*100,1),
+      '3pt%' = round(((X3pt.Makes)/(X3pt.Attempts))*100,1),
+      'Rim Attempts per 100 FGA' = round(((Rim.Attempts)/(Rim.Attempts+Mid.Attempts+X3pt.Attempts))*100,1),
+      'Mid Attempts per 100 FGA' = round(((Mid.Attempts)/(Rim.Attempts+Mid.Attempts+X3pt.Attempts))*100,1),
+      '3pt Attempts per 100 FGA' = round(((X3pt.Attempts)/(Rim.Attempts+Mid.Attempts+X3pt.Attempts))*100,1),
+      'Ast per 100 Tov' = round(((Assists)/(Turnovers))*100,1),
+      'Ast per 100 FGA' = round(((Assists)/(Rim.Attempts+Mid.Attempts+X3pt.Attempts))*100,1),
+      'Points per Shot' = round(((Points)/(Rim.Attempts+Mid.Attempts+X3pt.Attempts)),1),
+      'FGA' = (Rim.Attempts+Mid.Attempts+X3pt.Attempts),
+      'FGM' = (Rim.Makes+Mid.Makes+X3pt.Makes)
+    )
+  df <- df %>%
+    rename(
+      'Off. Reb' = 'Off..Reb',
+      'Def. Reb' = 'Def..Reb',
+      'Rim Makes' = 'Rim.Makes',
+      'Mid Makes' = 'Mid.Makes',
+      '3pt Makes' = 'X3pt.Makes',
+      'Rim Attempts' = 'Rim.Attempts',
+      'Mid Attempts' = 'Mid.Attempts',
+      '3pt Attempts' = 'X3pt.Attempts'
+    )
+  df <- df %>%
+    select(Practice, Points, Rebounds, Assists, 'FG%', FGA, FGM, 'eFG%', 'Rim Makes', 'Rim Attempts', 'Rim%', 'Rim Attempts per 100 FGA', 'Mid Makes', 'Mid Attempts', 'Mid%', 'Mid Attempts per 100 FGA', '2pt%', '3pt Makes', '3pt Attempts', '3pt%', '3pt Attempts per 100 FGA', 'Off. Reb', 'Def. Reb', 'Steals', 'Blocks', 'Turnovers', 'Charges', 'Fouls', 'Ast per 100 Tov', 'Ast per 100 FGA', 'Points per Shot')
+  df[is.na(df)] <- 0
+  for (col_name in names(df)) {
+    df[df[[col_name]] == Inf, col_name] <- 0
+  }
+  return(df)
+}
+
+Rollie <- finish(Rollie)
+write.csv(Rollie, 'Rollie Castineyra | Practice Progress.csv')
+Josh <- finish(Josh)
+write.csv(Josh, 'Josh Cohen | Practice Progress.csv')
+Jackson <- finish(Jackson)
+write.csv(Jackson, 'Jackson Cronin | Practice Progress.csv')
+Matt <- finish(Matt)
+write.csv(Matt, 'Matt Cross | Practice Progress.csv')
+Jaylen <- finish(Jaylen)
+write.csv(Jaylen, 'Jaylen Curry | Practice Progress.csv')
+Rob <- finish(Rob)
+write.csv(Rob, 'Robert Davis Jr. | Practice Progress.csv')
+Sool <- finish(Sool)
+write.csv(Sool, 'Rahsool Diggins | Practice Progress.csv')
+Tarique <- finish(Tarique)
+write.csv(Tarique, 'Tarique Foster | Practice Progress.csv')
+Dan <- finish(Dan)
+write.csv(Dan, 'Daniel Hankins-Sanford | Practice Progress.csv')
+Mathok <- finish(Mathok)
+write.csv(Mathok, 'Mathok Majok | Practice Progress.csv')
+Ryan <- finish(Ryan)
+write.csv(Ryan, 'Ryan Marcus | Practice Progress.csv')
+Sawyer <- finish(Sawyer)
+write.csv(Sawyer, 'Sawyer Mayhugh | Practice Progress.csv')
+Jayden <- finish(Jayden)
+write.csv(Jayden, 'Jayden Ndjigue | Practice Progress.csv')
+Keon <- finish(Keon)
+write.csv(Keon, 'Keon Thompson | Practice Progress.csv')
+Marqui <- finish(Marqui)
+write.csv(Marqui, 'Marqui Worthy | Practice Progress.csv')
+Total <- finish(Total)
+write.csv(Total, 'Full Team | Practice Progress.csv')
+```
+
+#all players
+```{r}
+all_players <- rbind(
+  tail(Rollie, 1),
+  tail(Josh, 1),
+  tail(Jackson, 1),
+  tail(Matt, 1),
+  tail(Jaylen, 1),
+  tail(Rob, 1),
+  tail(Sool, 1),
+  tail(Tarique, 1),
+  tail(Dan, 1),
+  tail(Mathok, 1),
+  tail(Ryan, 1),
+  tail(Sawyer, 1),
+  tail(Jayden, 1),
+  tail(Keon, 1),
+  tail(Marqui, 1)
+)
+all_players <- all_players[,-1]
+write.csv(all_players, 'Players | Practice Totals.csv')
+```
+

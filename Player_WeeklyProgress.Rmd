@@ -1,0 +1,147 @@
+---
+title: "Player_WeeklyProgress"
+author: "Greg"
+date: "2023-10-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac")
+```
+
+#packages
+```{r}
+library(dplyr)
+library(tidyverse)
+```
+
+#data
+```{r}
+week <- '9.25 - 10.1'
+weekly_data <- read.csv("/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/23-24UMassMBBPractice/9.25 - 10.1 | Practice Stats.csv")
+advweekly_data <- read.csv("/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/23-24UMassMBBPractice/9.25 - 10.1 | Advanced Stats.csv")
+```
+
+#select wanted
+```{r}
+data <- weekly_data %>%
+  mutate(Week = week) %>%
+  select(Week, Player, Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, Def_Reb, Stl, Blk, Tov)
+data <- cbind(data, advweekly_data[5], advweekly_data[6], advweekly_data[11], advweekly_data[12], advweekly_data[13])
+rim_values <- strsplit(data$Rim, '/')
+data$rim_m <- as.numeric(sapply(rim_values, "[[", 1))
+data$rim_a <- as.numeric(sapply(rim_values, "[[", 2))
+mid_values <- strsplit(data$Mid, '/')
+data$mid_m <- as.numeric(sapply(mid_values, "[[", 1))
+data$mid_a <- as.numeric(sapply(mid_values, "[[", 2))
+three_values <- strsplit(data$Three, '/')
+data$three_m <- as.numeric(sapply(three_values, "[[", 1))
+data$three_a <- as.numeric(sapply(three_values, "[[", 2))
+data <- data %>%
+  mutate(
+    FGA = (rim_a + mid_a + three_a),
+    FGM = (rim_m + mid_m + three_m)
+  ) %>%
+  select(Week, Player, Pts, Reb, Ast, rim_m, rim_a, Rim_Per, Rim_par, mid_m, mid_a, Mid_Per, Mid_par, three_m, three_a, Three_Per, Three_par, FGM, FGA, FG., eFG, Off_Reb, Def_Reb, Stl, Blk, Tov)
+```
+
+#player dataframes
+```{r}
+Rollie_new <- data[1,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/RC44_weekly.csv')
+stat <- stat[,-1]
+Rollie <- rbind(stat, Rollie_new)
+write.csv(Rollie, file = 'RC44_weekly.csv')
+
+Josh_new <- data[2,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/JC23_weekly.csv')
+stat <- stat[,-1]
+Josh <- rbind(stat, Josh_new)
+write.csv(Josh, file = 'JC23_weekly.csv')
+
+Jackson_new <- data[3,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/JC4_weekly.csv')
+stat <- stat[,-1]
+Jackson <- rbind(stat, Jackson_new)
+write.csv(Jackson, file = 'JC4_weekly.csv')
+
+Matt_new <- data[4,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/MC33_weekly.csv')
+stat <- stat[,-1]
+Matt <- rbind(stat, Matt_new)
+write.csv(Matt, file = 'MC33_weekly.csv')
+
+Jaylen_new <- data[5,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/JC2_weekly.csv')
+stat <- stat[,-1]
+Jaylen <- rbind(stat, Jaylen_new)
+write.csv(Jaylen, file = 'JC2_weekly.csv')
+
+Rob_new <- data[6,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/RDJ4_weekly.csv')
+stat <- stat[,-1]
+Rob <- rbind(stat, Rob_new)
+write.csv(Rob, file = 'RDJ4_weekly.csv')
+
+Rahsool_new <- data[7,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/RD3_weekly.csv')
+stat <- stat[,-1]
+Rahsool <- rbind(stat, Rahsool_new)
+write.csv(Rahsool, file = 'RD3_weekly.csv')
+
+Tarique_new <- data[8,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/TF12_weekly.csv')
+stat <- stat[,-1]
+Tarique <- rbind(stat, Tarique_new)
+write.csv(Tarique, file = 'TF12_weekly.csv')
+
+Dan_new <- data[9,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/DHS1_weekly.csv')
+stat <- stat[,-1]
+Dan <- rbind(stat, Dan_new)
+write.csv(Dan, file = 'DHS1_weekly.csv')
+
+Mathok_new <- data[10,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/MM34_weekly.csv')
+stat <- stat[,-1]
+Mathok <- rbind(stat, Mathok_new)
+write.csv(Mathok, file = 'MM34_weekly.csv')
+
+Ryan_new <- data[11,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/RM20_weekly.csv')
+stat <- stat[,-1]
+Ryan <- rbind(stat, Ryan_new)
+write.csv(Ryan, file = 'RM20_weekly.csv')
+
+Sawyer_new <- data[12,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/SM24_weekly.csv')
+stat <- stat[,-1]
+Sawyer <- rbind(stat, Sawyer_new)
+write.csv(Sawyer, file = 'SM24_weekly.csv')
+
+Jayden_new <- data[13,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/JN11_weekly.csv')
+stat <- stat[,-1]
+Jayden <- rbind(stat, Jayden_new)
+write.csv(Jayden, file = 'JN11_weekly.csv')
+
+Keon_new <- data[14,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/KT5_weekly.csv')
+stat <- stat[,-1]
+Keon <- rbind(stat, Keon_new)
+write.csv(Keon, file = 'KT5_weekly.csv')
+
+Marqui_new <- data[15,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/MW10_weekly.csv')
+stat <- stat[,-1]
+Marqui <- rbind(stat, Marqui_new)
+write.csv(Marqui, file = 'MW10_weekly.csv')
+
+Total_new <- data[16,]
+stat <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/Weekly Player CSVs/Team_weekly.csv')
+stat <- stat[,-1]
+Total <- rbind(stat, Total_new)
+write.csv(Total, file = 'Team_weekly.csv')
+```
+

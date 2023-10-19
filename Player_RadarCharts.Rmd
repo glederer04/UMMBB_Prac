@@ -1,0 +1,131 @@
+---
+title: "Player_RadarCharts"
+author: "Greg"
+date: "2023-10-13"
+output: html_document
+---
+
+**FG%, eFG%, Rim%, Mid%, 2pt%, 3pt%**
+**Pts, Reb, OReb, DReb, Ast, Tov**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/23-24UMassMBBPractice")
+```
+
+#packages
+```{r}
+library(tidyverse)
+library(dplyr)
+library(fmsb)
+library(ggplot2)
+```
+
+#example data
+```{r}
+data <- read.csv('Keon Thompson | Practice Progress.csv')
+full_data <- read.csv('Players | Practice Totals.csv')
+```
+
+#fix full data
+```{r}
+full_data <- full_data[,-1]
+full_data <- full_data[rowSums(full_data == 0) != ncol(full_data),]
+
+data <- data[,-1:-2]
+```
+
+#radar
+```{r}
+eff_stats <- data[,c(4,7,10,14,16,19)]
+eff_stats_comp <- full_data[,c(4,7,10,14,16,19)]
+
+averages <- round(colMeans(eff_stats_comp),1)
+
+plot_data <- data.frame(Stat = c('FG%', 'eFG%', 'Rim%', 'Mid%', '2pt%', '3pt%'),
+                        Value = t(tail(eff_stats, 1)),
+                        Avg = averages)
+colnames(plot_data)[2] = 'Value'
+
+radar_chart <- ggplot(plot_data, aes(x = Stat, y = Value)) +
+  geom_col(aes(fill = Stat), width = 1, alpha = 0.9, color = 'white') +
+  geom_point(aes(y = Avg), size = 3, color = "black") +
+  geom_segment(aes(x = Stat, y = 0, xend = Stat, yend = Avg), linetype = "dashed", color = "black") +
+  coord_polar(start = -pi/2, clip = "off")
+radar_chart <- radar_chart +
+  theme_minimal() +
+  theme(panel.grid.major = element_line(color = "white", size = 0.5),
+        plot.background = element_rect(fill = "gray89"),
+        legend.position = "none",
+        axis.text.x = element_text(size = 12, face = "bold", color = "black"),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank()
+        ) + 
+  labs(title = paste0('player', ' | Shooting Efficiency'),
+       subtitle = paste0("Dotted line represents average amongst team throughout practice.")
+       ) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = 'black'),
+    plot.subtitle = element_text(color = 'black', size = 12, hjust = 0.5)
+  ) +
+  scale_fill_manual(values = c('#971B2F', '#971B2F', '#971B2F', '#971B2F', '#971B2F', '#971B2F'), guide = 'none')
+print(radar_chart)
+#ggsave(plot = radar_chart, filename = 'test.png')
+```
+
+#radar 2
+```{r}
+full_data <- full_data[order(full_data$Points), ]
+full_data$Pts_rk <- rank(full_data$Points)
+
+full_data <- full_data[order(full_data$Rebounds), ]
+full_data$Reb_rk <- rank(full_data$Rebounds)
+
+full_data <- full_data[order(full_data$Assists), ]
+full_data$Ast_rk <- rank(full_data$Assists)
+
+full_data <- full_data[order(full_data$Off..Reb), ]
+full_data$OReb_rk <- rank(full_data$Off..Reb)
+
+full_data <- full_data[order(full_data$Def..Reb), ]
+full_data$DReb_rk <- rank(full_data$Def..Reb)
+
+full_data <- full_data[order(full_data$Turnovers), ]
+full_data$Tov_rk <- rank(-full_data$Turnovers)
+
+player <- tail(data,1)
+select_data <- full_data %>%
+  filter(Points == player$Points, Rebounds == player$Rebounds, Assists == player$Assists)
+reg_stats <- select_data[,c(31,32,34,35,33,36)]
+
+plot_data <- data.frame(Stat = c('Pts', 'Reb', 'OReb', 'DReb', 'Ast', 'Tov'),
+                        Value = t(tail(reg_stats, 1))
+)
+colnames(plot_data)[2] = 'Value'
+
+radar_chart <- ggplot(plot_data, aes(x = Stat, y = Value)) +
+  geom_col(aes(fill = Stat), width = 1, alpha = 0.9, color = 'white') +
+  coord_polar(start = -pi/2, clip = "off")
+radar_chart <- radar_chart +
+  theme_minimal() +
+  theme(panel.grid.major = element_line(color = "white", size = 0.5),
+        plot.background = element_rect(fill = "gray89"),
+        legend.position = "none",
+        axis.text.x = element_text(size = 12, face = "bold", color = "black"),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank()
+        ) + 
+  labs(title = paste0('player', ' | Total Stats'),
+       subtitle = paste0("Shaded areas are in comparison to rest of team. \nLarger the area, better they are performing compared to rest of team.")
+       ) + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 20, face = "bold", color = 'black'),
+    plot.subtitle = element_text(color = 'black', size = 12, hjust = 0.5)
+  ) +
+  scale_fill_manual(values = c('#971B2F', '#971B2F', '#971B2F', '#971B2F', '#971B2F', '#971B2F'), guide = 'none')
+print(radar_chart)
+#ggsave(plot = radar_chart, filename = 'test.png')
+```
+

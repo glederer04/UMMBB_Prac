@@ -1,0 +1,690 @@
+---
+title: "Master_DailyPrac"
+author: "Greg"
+date: "2023-10-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac")
+```
+
+#packages
+```{r}
+library(dplyr)
+library(reactable)
+library(htmltools)
+library(ggsci)
+library(RColorBrewer)
+library(htmlwidgets)
+library(gt)
+library(gtExtras)
+library(tidyverse)
+library(gtsummary)
+```
+
+#data
+```{r}
+practice_data <- read.csv("/Users/gregorylederer/Desktop/UMass Basketball/CodeStatSheet - Sheet1.csv")
+save_name_csv <- paste0(format(Sys.Date(), format = "%m-%d-%Y"), ' | Practice Stats.csv')
+save_name_csv2 <- paste0(format(Sys.Date(), format = "%m-%d-%Y"), ' | Practice Stats2.csv')
+save_name1 <- paste0(format(Sys.Date(), format = "%Y-%m-%d"), ' | Complete Practice Totals.png')
+save_name2 <- paste0(format(Sys.Date(), format = "%Y-%m-%d"), ' | Basic Practice Totals.png')
+table_subtitle <- paste0(format(Sys.Date(), format="%B %d, %Y"), " | Complete Totals")
+save_name3 <- paste0(format(Sys.Date(), format = "%Y-%m-%d"), ' | Frank Totals.png')
+table_subtitle1 <- paste0(format(Sys.Date(), format="%B %d, %Y"), " | Complete Totals")
+total_data <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/23-24 Practice Stat Sheet - Grand Totals.csv')
+possessions_total <- total_data$X.1[19]
+table_subtitle2 <- paste0("Full Season | Complete Totals")
+table_subtitle3 <- paste0("Full Season | Basic Totals")
+table_subtitle4 <- paste0("Full Season | Advanced Totals")
+save_name4 <- paste0("Full Season - Complete Totals Stat Sheet.png")
+save_name5 <- paste0("Full Season - Basic Totals Stat Sheet.png")
+save_name6 <- paste0("Full Season - Advanced Totals Stat Sheet.png")
+table_subtitle5 <- paste0("Full Season | Complete Totals")
+save_name7 <- paste0("Full Season - Frank Total Stat Sheet.png")
+```
+
+#urls
+```{r}
+urls <- c('https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRollie_Castineyra_CgC7L.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJosh_MYSjy.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJackson_Cronin_SdErY.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMatt_q1H5m.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJaylen_HWhjg.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRobert_F5SIh.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRahsool_Diggins_nOrSz.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FTarique_Foster_JV3ru.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FDaniel_Hankins_Sanford_d3tPh.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMathok_PYwqm.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRyan_Marcus_zHwGy.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https://dxbhsrqyrr690.cloudfront.net/sidearm.nextgen.sites/umassathletics.com/images/2023/5/18/Mayhugh_Sawyer.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJayden_Ndjigue_uDraA.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FKeon_Thompson_j7lVX.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMarqui_Worthy_fB7nD.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1200px-UMass_Amherst_athletics_logo.svg.png')
+```
+
+#daily prac reactable
+```{r}
+practice_data[is.na(practice_data)] = 0
+full_practice_data <- practice_data %>%
+  mutate(Rim_Per = round(Rim_Make/(Rim_Make+Rim_Miss)*100, 1),
+         Mid_Per = round(Mid_Make/(Mid_Make+Mid_Miss)*100, 1),
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         Reb = Off_Reb+Def_Reb
+         ) %>%
+  select(url, Player, Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, Def_Reb, Stl, Blk, Tov, Charges, Fouls)
+full_practice_data[is.na(full_practice_data)] = 0
+
+totals_row <- c('https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1200px-UMass_Amherst_athletics_logo.svg.png',
+                "Totals",
+                sum(practice_data$Pts),
+                sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb),
+                sum(practice_data$Ast),
+                paste0(sum(practice_data$Rim_Make), "/", sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)),
+                round(sum(practice_data$Rim_Make)/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss))*100,1),
+                paste0(sum(practice_data$Mid_Make), "/", sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)),
+                round(sum(practice_data$Mid_Make)/(sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss))*100,1),
+                paste0(sum(practice_data$Three_Make), "/", sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)),
+                round(sum(practice_data$Three_Make)/(sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))*100,1),
+                sum(practice_data$Off_Reb),
+                sum(practice_data$Def_Reb),
+                sum(practice_data$Stl),
+                sum(practice_data$Blk),
+                sum(practice_data$Tov),
+                sum(practice_data$Charges),
+                sum(practice_data$Fouls)
+                )
+full_practice_data[nrow(full_practice_data) + 1,] <- totals_row
+full_practice_data$Rim_Per = as.numeric(as.character(full_practice_data$Rim_Per))
+full_practice_data$Mid_Per = as.numeric(as.character(full_practice_data$Mid_Per))
+full_practice_data$Three_Per = as.numeric(as.character(full_practice_data$Three_Per))
+
+basic_practice_data <- practice_data %>%
+  mutate(Two = paste0(Rim_Make+Mid_Make, "/", Rim_Make+Rim_Miss+Mid_Make+Mid_Miss),
+         Two_Per = round((Rim_Make+Mid_Make)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss)*100,1),
+         Reb = Off_Reb+Def_Reb,
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         FG. = round(((Rim_Make+Mid_Make+Three_Make)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100,1),
+         eFG = round((((Rim_Make+Mid_Make+Three_Make)+(0.5*Three_Make))/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100,1)
+         ) %>%
+  select(url, Player, Pts, Reb, Ast, FG., eFG, Two, Two_Per, Three, Three_Per)
+basic_practice_data[is.na(basic_practice_data)] <- 0
+
+totals_row <- c('https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1200px-UMass_Amherst_athletics_logo.svg.png', "Totals", 
+                sum(basic_practice_data$Pts), 
+                sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb), 
+                sum(basic_practice_data$Ast),
+                round(((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make))/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)))*100,1),
+                round((((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make))+(0.5*sum(practice_data$Three_Make)))/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)))*100,1),
+                paste0(sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make), "/", sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss)),
+                round((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make))/(sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss))*100,1),
+                paste0(sum(practice_data$Three_Make), "/", sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)),
+                round(sum(practice_data$Three_Make)/(sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))*100,1)
+                )
+basic_practice_data[nrow(basic_practice_data) + 1,] <- totals_row
+
+write.csv(full_practice_data, file = save_name_csv)
+write.csv(basic_practice_data, save_name_csv2)
+```
+
+#print daily
+```{r}
+practice_data[is.na(practice_data)] = 0
+full_practice_data <- practice_data %>%
+  mutate(Rim_Per = round(Rim_Make/(Rim_Make+Rim_Miss)*100, 1),
+         Mid_Per = round(Mid_Make/(Mid_Make+Mid_Miss)*100, 1),
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         Reb = Off_Reb+Def_Reb,
+         ORB_per = round((Off_Reb/(Off_Reb+Def_Reb))*100,1)
+         ) %>%
+  select(url, Player, Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, ORB_per, Def_Reb, Stl, Blk, Tov, Charges, Fouls)
+full_practice_data[is.na(full_practice_data)] = 0
+
+totals_row <- c('https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1200px-UMass_Amherst_athletics_logo.svg.png',
+                "Totals",
+                sum(practice_data$Pts),
+                sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb),
+                sum(practice_data$Ast),
+                paste0(sum(practice_data$Rim_Make), "/", sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)),
+                round(sum(practice_data$Rim_Make)/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss))*100,1),
+                paste0(sum(practice_data$Mid_Make), "/", sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)),
+                round(sum(practice_data$Mid_Make)/(sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss))*100,1),
+                paste0(sum(practice_data$Three_Make), "/", sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)),
+                round(sum(practice_data$Three_Make)/(sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))*100,1),
+                sum(practice_data$Off_Reb),
+                round((sum(practice_data$Off_Reb)/(sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb)))*100,1),
+                sum(practice_data$Def_Reb),
+                sum(practice_data$Stl),
+                sum(practice_data$Blk),
+                sum(practice_data$Tov),
+                sum(practice_data$Charges),
+                sum(practice_data$Fouls)
+                )
+full_practice_data[nrow(full_practice_data) + 1,] <- totals_row
+full_practice_data$Rim_Per = as.numeric(as.character(full_practice_data$Rim_Per))
+full_practice_data$Mid_Per = as.numeric(as.character(full_practice_data$Mid_Per))
+full_practice_data$Three_Per = as.numeric(as.character(full_practice_data$Three_Per))
+Def_FG. = round(as.numeric((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make))/(sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Miss)))*100,1)
+Def_FG. = 100 - Def_FG.
+possessions <- round(as.numeric(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)+sum(practice_data$Tov)-sum(practice_data$Off_Reb)))
+
+basic_practice_data <- practice_data %>%
+  mutate(Two = paste0(Rim_Make+Mid_Make, "/", Rim_Make+Rim_Miss+Mid_Make+Mid_Miss),
+         Two_Per = round((Rim_Make+Mid_Make)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss)*100,1),
+         Reb = Off_Reb+Def_Reb,
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         ) %>%
+  select(url, Player, Pts, Reb, Ast, Two, Two_Per, Three, Three_Per, Off_Reb, Def_Reb, Stl, Blk, Tov, Fouls)
+basic_practice_data[is.na(basic_practice_data)] <- 0
+
+totals_row <- c('https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1200px-UMass_Amherst_athletics_logo.svg.png', "Totals", 
+                sum(basic_practice_data$Pts), 
+                sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb), 
+                sum(basic_practice_data$Ast), 
+                paste0(sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make), "/", sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss)),
+                round((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make))/(sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss))*100,1),
+                paste0(sum(practice_data$Three_Make), "/", sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)),
+                round(sum(practice_data$Three_Make)/(sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))*100,1),
+                sum(basic_practice_data$Off_Reb), 
+                sum(basic_practice_data$Def_Reb), 
+                sum(basic_practice_data$Stl), 
+                sum(basic_practice_data$Blk), 
+                sum(basic_practice_data$Tov), 
+                sum(basic_practice_data$Fouls)
+                )
+basic_practice_data[nrow(basic_practice_data) + 1,] <- totals_row
+
+full_practice_table <- full_practice_data %>%
+  gt() %>%
+  gt_theme_538() %>%
+  gt_highlight_rows(rows = c(2, 4, 6, 8, 10, 12, 14), fill = 'gray94', font_weight = 'normal', font_color = 'gray30') %>%
+  gt_highlight_rows(rows = c(16), fill = 'gray77') %>%
+  cols_label(url = '', Player = md('**Player**'), Pts = md('**Pts**'), Rim = md('**Rim**'), Rim_Per = md('**Rim%**'), Mid = md('**Mid**'), Mid_Per = md('**Mid%**'), Three = md('**3pt.**'), Three_Per = md('**3pt%**'), Off_Reb = md('**OReb**'), ORB_per = md('**ORB%**'), Def_Reb = md('**DReb**'), Reb = md('**Reb**'), Ast = md('**Ast**'), Stl = md('**Stl**'), Blk = md('**Blk**'), Tov = md('**Tov**'), Charges = md('**Charges**'), Fouls = md('**Fouls**')) %>%
+  tab_header(title = md('**Practice Stat Sheet**'), subtitle = paste0(table_subtitle)) %>%
+  text_transform(locations = cells_body(vars(url)), fn = function(x) {web_image(url = x, height = px(22.5))}) %>%
+  data_color(columns = c(Rim_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  data_color(columns = c(Mid_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  data_color(columns = c(Three_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  tab_options(table.background.color = 'gray89', heading.background.color = 'gray89', column_labels.background.color = 'gray89') %>%
+  tab_options(heading.title.font.size = 30, heading.subtitle.font.size = 15) %>%
+  gt_add_divider(Ast) %>%
+  gt_add_divider(Rim_Per) %>%
+  gt_add_divider(Mid_Per) %>%
+  gt_add_divider(Three_Per) %>%
+  tab_options(column_labels.font.size = 13) %>%
+  cols_align(align = c('center'), columns = vars(Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, ORB_per, Def_Reb, Stl, Blk, Tov, Charges, Fouls)) %>%
+  tab_source_note(source_note = paste0('Def FG%: ', Def_FG., '% | Possessions: ', possessions)) %>%
+  tab_options(source_notes.font.size = 15) %>%
+  gtsave(save_name1)
+
+basic_practice_table <- basic_practice_data %>%
+  gt() %>%
+  gt_theme_538() %>%
+  gt_highlight_rows(rows = c(2, 4, 6, 8, 10, 12, 14), fill = 'gray94', font_weight = 'normal', font_color = 'gray30') %>%
+  gt_highlight_rows(rows = c(16), fill = 'gray77') %>%
+  cols_label(url = '', Player = md('**Player**'), Pts = md('**Pts**'), Two = md('**2pt.**'), Two_Per = md('**2pt%**'), Three = md('**3pt.**'), Three_Per = md('**3pt%**'), Off_Reb = md('**OReb**'), Def_Reb = md('**DReb**'), Reb = md('**Reb**'), Ast = md('**Ast**'), Stl = md('**Stl**'), Blk = md('**Blk**'), Tov = md('**Tov**'), Fouls = md('**Fouls**')) %>%
+  tab_header(title = md('**Practice Stat Sheet**'), subtitle = table_subtitle) %>%
+  text_transform(locations = cells_body(vars(url)), fn = function(x) {web_image(url = x, height = px(22.5))}) %>%
+  tab_options(table.background.color = 'gray89', heading.background.color = 'gray89', column_labels.background.color = 'gray89') %>%
+  tab_options(heading.title.font.size = 30, heading.subtitle.font.size = 15) %>%
+  cols_align(align = c('center'), columns = vars(Pts, Two, Two_Per, Three, Three_Per, Off_Reb, Def_Reb, Reb, Ast, Stl, Blk, Tov, Fouls)) %>%
+  gt_add_divider(Ast) %>%
+  gt_add_divider(Two_Per) %>%
+  gt_add_divider(Three_Per) %>%
+  tab_source_note(source_note = paste0('Possessions: ', possessions)) %>%
+  tab_options(source_notes.font.size = 15) %>%
+  gtsave(save_name2)
+```
+
+#frank daily
+```{r}
+practice_data[is.na(practice_data)] = 0
+frank <- practice_data %>%
+  mutate(
+    FG = paste0((Rim_Make+Mid_Make+Three_Make), '/', (Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss)),
+    '3P' = paste0((Three_Make), '/', (Three_Make+Three_Miss)),
+    ORB = Off_Reb,
+    'ORB%' = round((Off_Reb/(Off_Reb+Def_Reb))*100,1),
+    DRB = Def_Reb,
+    TRB = (Off_Reb+Def_Reb),
+    PTS = Pts,
+    AST = Ast,
+    TO = Tov,
+    STL = Stl,
+    BLK = Blk
+  ) %>%
+  select(url, Player, FG, '3P', ORB, 'ORB%', DRB, TRB, PTS, AST, TO, STL, BLK)
+frank[is.na(frank)] = 0
+total <- c('https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1200px-UMass_Amherst_athletics_logo.svg.png',
+           "Totals",
+           paste0((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make)), '/', (sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Miss))),
+           paste0((sum(practice_data$Three_Make)), '/', (sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))),
+           sum(practice_data$Off_Reb),
+           round(((sum(practice_data$Off_Reb))/(sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb)))*100,1),
+           sum(practice_data$Def_Reb),
+           (sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb)),
+           sum(practice_data$Pts),
+           sum(practice_data$Ast),
+           sum(practice_data$Tov),
+           sum(practice_data$Stl),
+           sum(practice_data$Blk)
+           )
+frank[nrow(frank)+1,] <- total
+
+FG_perc <- as.numeric(round(((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make))/(sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Miss)))*100,1))
+Three_perc <- as.numeric(round(((sum(practice_data$Three_Make))/(sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)))*100,1))
+ORB_perc <- as.numeric(round(((sum(practice_data$Off_Reb))/(sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb)))*100,1))
+
+frank_table <- frank %>%
+  gt() %>%
+  gt_theme_538() %>%
+  gt_highlight_rows(rows = c(2, 4, 6, 8, 10, 12, 14), fill = 'gray94', font_weight = 'normal', font_color = 'gray30') %>%
+  gt_highlight_rows(rows = c(16), fill = 'gray77') %>%
+  cols_label(url = '', Player = md('**Player**'), FG = md('**FG**'), '3P' = md('**3P**'), ORB = md('**OReb**'), 'ORB%' = md('**OReb%**'), DRB = md('**DReb**'), TRB = md('**TRB**'), PTS = md('**PTS**'), AST = md('**AST**'), TO = md('**TOV**'), STL = md('**STL**'), BLK = md('**BLK**')) %>%
+  text_transform(locations = cells_body(vars(url)), fn = function(x) {web_image(url = x, height = px(22.5))}) %>%
+  tab_header(title = md('**Practice Stat Sheet**'), subtitle = paste0(table_subtitle1)) %>%
+  tab_options(table.background.color = 'gray89', heading.background.color = 'gray89', column_labels.background.color = 'gray89') %>%
+  tab_options(heading.title.font.size = 30, heading.subtitle.font.size = 15) %>%
+  gt_add_divider('3P') %>%
+  gt_add_divider(TRB) %>%
+  tab_options(column_labels.font.size = 13) %>%
+  cols_align(align = c('center'), columns = vars(FG, '3P', ORB, 'ORB%', DRB, TRB, PTS, AST, TO, STL, BLK)) %>%
+  tab_source_note(source_note = paste0('FG%: ', FG_perc, '%  |  Def FG%: ', Def_FG., '%  |  3pt%: ', Three_perc, '%  |  Possessions: ', possessions)) %>%
+  tab_options(source_notes.font.size = 15) %>%
+  gtsave(save_name3)
+```
+
+#total practice reactable
+```{r}
+total_data <- total_data[-(17:32),]
+total_data <- total_data[-1,]
+colnames(total_data)[1] = 'Player'
+colnames(total_data)[2] = 'Pts'
+colnames(total_data)[3] = 'Rim_Make'
+colnames(total_data)[4] = 'Rim_Miss'
+colnames(total_data)[5] = 'Mid_Make'
+colnames(total_data)[6] = 'Mid_Miss'
+colnames(total_data)[7] = 'Three_Make'
+colnames(total_data)[8] = 'Three_Miss'
+colnames(total_data)[9] = 'Off_Reb'
+colnames(total_data)[10] = 'Def_Reb'
+colnames(total_data)[11] = 'Ast'
+colnames(total_data)[12] = 'Stl'
+colnames(total_data)[13] = 'Blk'
+colnames(total_data)[14] = 'Tov'
+colnames(total_data)[15] = 'Charges'
+colnames(total_data)[16] = 'Fouls'
+total_data$Pts <- as.numeric(total_data$Pts)
+total_data$Rim_Make <- as.numeric(total_data$Rim_Make)
+total_data$Rim_Miss <- as.numeric(total_data$Rim_Miss)
+total_data$Mid_Make <- as.numeric(total_data$Mid_Make)
+total_data$Mid_Miss <- as.numeric(total_data$Mid_Miss)
+total_data$Three_Make <- as.numeric(total_data$Three_Make)
+total_data$Three_Miss <- as.numeric(total_data$Three_Miss)
+total_data$Off_Reb <- as.numeric(total_data$Off_Reb)
+total_data$Def_Reb <- as.numeric(total_data$Def_Reb)
+total_data$Ast <- as.numeric(total_data$Ast)
+total_data$Stl <- as.numeric(total_data$Stl)
+total_data$Blk <- as.numeric(total_data$Blk)
+total_data$Tov <- as.numeric(total_data$Tov)
+total_data$Charges <- as.numeric(total_data$Charges)
+total_data$Fouls <- as.numeric(total_data$Fouls)
+
+total_data[is.na(total_data)] = 0
+full_practice_data <- total_data %>%
+  mutate(Rim_Per = round(Rim_Make/(Rim_Make+Rim_Miss)*100, 1),
+         Mid_Per = round(Mid_Make/(Mid_Make+Mid_Miss)*100, 1),
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         Reb = Off_Reb+Def_Reb) %>%
+  select(Player, Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, Def_Reb, Stl, Blk, Tov, Charges, Fouls) 
+full_practice_data[is.na(full_practice_data)] = 0
+
+full_totals_row <- c(
+                "Totals",
+                sum(total_data$Pts),
+                sum(total_data$Off_Reb)+sum(total_data$Def_Reb),
+                sum(total_data$Ast),
+                paste0(sum(total_data$Rim_Make), "/", sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)),
+                round(sum(total_data$Rim_Make)/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss))*100,1),
+                paste0(sum(total_data$Mid_Make), "/", sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)),
+                round(sum(total_data$Mid_Make)/(sum(total_data$Mid_Make)+sum(total_data$Mid_Miss))*100,1),
+                paste0(sum(total_data$Three_Make), "/", sum(total_data$Three_Make)+sum(total_data$Three_Miss)),
+                round(sum(total_data$Three_Make)/(sum(total_data$Three_Make)+sum(total_data$Three_Miss))*100,1),
+                sum(total_data$Off_Reb),
+                sum(total_data$Def_Reb),
+                sum(total_data$Stl),
+                sum(total_data$Blk),
+                sum(total_data$Tov),
+                sum(total_data$Charges),
+                sum(total_data$Fouls)
+                )
+full_practice_data[nrow(full_practice_data) + 1,] <- full_totals_row
+full_practice_data$Rim_Per = as.numeric(as.character(full_practice_data$Rim_Per))
+full_practice_data$Mid_Per = as.numeric(as.character(full_practice_data$Mid_Per))
+full_practice_data$Three_Per = as.numeric(as.character(full_practice_data$Three_Per))
+full_practice_data <- cbind(urls, full_practice_data)
+
+advanced_data <- total_data %>%
+  mutate(Rim_par = round(((Rim_Make+Rim_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         Mid_par = round(((Mid_Make+Mid_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         Three_par = round(((Three_Make+Three_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         eFG = round((((Rim_Make+Mid_Make+Three_Make)+(0.5*Three_Make))/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100,1),
+         FG. = round(((Rim_Make+Mid_Make+Three_Make)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         PPS = round((Pts/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss)),1)) %>%
+  select(Player, Pts, FG., eFG, PPS, Rim, Mid, Three, Rim_par, Mid_par, Three_par)
+advanced_data[is.na(advanced_data)] <- 0
+
+advanced_totals_row <- c("Totals", 
+                sum(total_data$Pts), 
+                round(((sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1),
+                round((((sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make))+(0.5*sum(total_data$Three_Make)))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1),
+                round((sum(total_data$Pts)/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss))),1),
+                paste0(sum(total_data$Rim_Make), "/", sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)),
+                paste0(sum(total_data$Mid_Make), "/", sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)),
+                paste0(sum(total_data$Three_Make), "/", sum(total_data$Three_Make)+sum(total_data$Three_Miss)),
+                round(((sum(total_data$Rim_Make)+sum(total_data$Rim_Miss))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1),
+                round(((sum(total_data$Mid_Make)+sum(total_data$Mid_Miss))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1),
+                round(((sum(total_data$Three_Make)+sum(total_data$Three_Miss))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1))
+advanced_data[nrow(advanced_data) + 1,] <- advanced_totals_row
+advanced_data$eFG = as.numeric(as.character(advanced_data$eFG))
+advanced_data <- cbind(urls, advanced_data)
+
+per70 <- total_data
+per70_totals <- c('Totals',
+                  sum(total_data$Pts),
+                  sum(total_data$Rim_Make),
+                  sum(total_data$Rim_Miss),
+                  sum(total_data$Mid_Make),
+                  sum(total_data$Mid_Miss),
+                  sum(total_data$Three_Make),
+                  sum(total_data$Three_Miss),
+                  sum(total_data$Off_Reb),
+                  sum(total_data$Def_Reb),
+                  sum(total_data$Ast),
+                  sum(total_data$Stl),
+                  sum(total_data$Blk),
+                  sum(total_data$Tov),
+                  sum(total_data$Charges),
+                  sum(total_data$Fouls))
+per70[nrow(per70)+1,] <- per70_totals
+per70 <- per70 %>%
+  mutate(Pts = round(as.numeric(Pts) / (as.numeric(possessions_total) / 70),1),
+         Rim_Make = round(as.numeric(Rim_Make) / (as.numeric(possessions_total) / 70),1),
+         Rim_Miss = round(as.numeric(Rim_Miss) / (as.numeric(possessions_total) / 70),1),
+         Mid_Make = round(as.numeric(Mid_Make) / (as.numeric(possessions_total) / 70),1),
+         Mid_Miss = round(as.numeric(Mid_Miss) / (as.numeric(possessions_total) / 70),1),
+         Three_Make = round(as.numeric(Three_Make) / (as.numeric(possessions_total) / 70),1),
+         Three_Miss = round(as.numeric(Three_Miss) / (as.numeric(possessions_total) / 70),1),
+         Off_Reb = round(as.numeric(Off_Reb) / (as.numeric(possessions_total) / 70),1),
+         Def_Reb = round(as.numeric(Def_Reb) / (as.numeric(possessions_total) / 70),1),
+         Ast = round(as.numeric(Ast) / (as.numeric(possessions_total) / 70),1),
+         Stl = round(as.numeric(Stl) / (as.numeric(possessions_total) / 70),1),
+         Blk = round(as.numeric(Blk) / (as.numeric(possessions_total) / 70),1),
+         Tov = round(as.numeric(Tov) / (as.numeric(possessions_total) / 70),1),
+         Charges = round(as.numeric(Charges) / (as.numeric(possessions_total) / 70),1),
+         Fouls = round(as.numeric(Fouls) / (as.numeric(possessions_total) / 70),1))
+per70 <- per70 %>%
+  mutate(Rim_Per = round(Rim_Make/(Rim_Make+Rim_Miss)*100, 1),
+         Mid_Per = round(Mid_Make/(Mid_Make+Mid_Miss)*100, 1),
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         Reb = Off_Reb+Def_Reb) %>%
+  select(Player, Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, Def_Reb, Stl, Blk, Tov, Charges, Fouls) 
+per70[is.na(per70)] = 0
+per70 <- cbind(urls, per70)
+
+write.csv(full_practice_data, file = 'Grand Total | Practice Stats.csv')
+write.csv(per70, file = 'Grand Total | Per70 Stats.csv')
+write.csv(advanced_data, file = 'Grand Total | Advanced Stats.csv')
+```
+
+#print total
+```{r}
+Def_FG. = round(as.numeric((sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make))/(sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Miss)+sum(total_data$Three_Miss)))*100,1)
+Def_FG. = 100 - Def_FG.
+
+full_practice_data <- total_data %>%
+  mutate(Rim_Per = round(Rim_Make/(Rim_Make+Rim_Miss)*100, 1),
+         Mid_Per = round(Mid_Make/(Mid_Make+Mid_Miss)*100, 1),
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         Reb = Off_Reb+Def_Reb,
+         ORB_per = round((Off_Reb/(Off_Reb+Def_Reb))*100,1)
+         ) %>%
+  select(Player, Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, ORB_per, Def_Reb, Stl, Blk, Tov, Charges, Fouls) 
+full_practice_data[is.na(full_practice_data)] = 0
+
+full_totals_row <- c(
+                "Totals",
+                sum(total_data$Pts),
+                sum(total_data$Off_Reb)+sum(total_data$Def_Reb),
+                sum(total_data$Ast),
+                paste0(sum(total_data$Rim_Make), "/", sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)),
+                round(sum(total_data$Rim_Make)/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss))*100,1),
+                paste0(sum(total_data$Mid_Make), "/", sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)),
+                round(sum(total_data$Mid_Make)/(sum(total_data$Mid_Make)+sum(total_data$Mid_Miss))*100,1),
+                paste0(sum(total_data$Three_Make), "/", sum(total_data$Three_Make)+sum(total_data$Three_Miss)),
+                round(sum(total_data$Three_Make)/(sum(total_data$Three_Make)+sum(total_data$Three_Miss))*100,1),
+                sum(total_data$Off_Reb),
+                round((sum(total_data$Off_Reb)/(sum(total_data$Off_Reb)+sum(total_data$Def_Reb)))*100,1),
+                sum(total_data$Def_Reb),
+                sum(total_data$Stl),
+                sum(total_data$Blk),
+                sum(total_data$Tov),
+                sum(total_data$Charges),
+                sum(total_data$Fouls)
+                )
+full_practice_data[nrow(full_practice_data) + 1,] <- full_totals_row
+full_practice_data$Rim_Per = as.numeric(as.character(full_practice_data$Rim_Per))
+full_practice_data$Mid_Per = as.numeric(as.character(full_practice_data$Mid_Per))
+full_practice_data$Three_Per = as.numeric(as.character(full_practice_data$Three_Per))
+
+basic_practice_data <- total_data %>%
+  mutate(Two = paste0(Rim_Make+Mid_Make, "/", Rim_Make+Rim_Miss+Mid_Make+Mid_Miss),
+         Two_Per = round((Rim_Make+Mid_Make)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss)*100,1),
+         Reb = Off_Reb+Def_Reb,
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss)
+         ) %>%
+  select(Player, Pts, Reb, Ast, Two, Two_Per, Three, Three_Per, Off_Reb, Def_Reb, Stl, Blk, Tov, Fouls) 
+basic_practice_data[is.na(basic_practice_data)] <- 0
+
+basic_totals_row <- c("Totals", 
+                sum(basic_practice_data$Pts), 
+                sum(total_data$Off_Reb)+sum(total_data$Def_Reb), 
+                sum(basic_practice_data$Ast), 
+                paste0(sum(total_data$Rim_Make)+sum(total_data$Mid_Make), "/", sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Miss)),
+                round((sum(total_data$Rim_Make)+sum(total_data$Mid_Make))/(sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Miss))*100,1),
+                paste0(sum(total_data$Three_Make), "/", sum(total_data$Three_Make)+sum(total_data$Three_Miss)),
+                round(sum(total_data$Three_Make)/(sum(total_data$Three_Make)+sum(total_data$Three_Miss))*100,1),
+                sum(basic_practice_data$Off_Reb), 
+                sum(basic_practice_data$Def_Reb), 
+                sum(basic_practice_data$Stl), 
+                sum(basic_practice_data$Blk), 
+                sum(basic_practice_data$Tov), 
+                sum(basic_practice_data$Fouls)
+                )
+basic_practice_data[nrow(basic_practice_data) + 1,] <- basic_totals_row
+
+advanced_data <- total_data %>%
+  mutate(Rim_par = round(((Rim_Make+Rim_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         Mid_par = round(((Mid_Make+Mid_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         Three_par = round(((Three_Make+Three_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         eFG = round((((Rim_Make+Mid_Make+Three_Make)+(0.5*Three_Make))/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         Rim_Per = round(Rim_Make/(Rim_Make+Rim_Miss)*100, 1),
+         Mid_Per = round(Mid_Make/(Mid_Make+Mid_Miss)*100, 1),
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1)
+         ) %>%
+  select(Player, Pts, eFG, Rim, Rim_Per, Rim_par, Mid, Mid_Per, Mid_par, Three, Three_Per, Three_par)
+advanced_data[is.na(advanced_data)] <- 0
+
+advanced_totals_row <- c("Totals", 
+                sum(total_data$Pts), 
+                round((((sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make))+(0.5*sum(total_data$Three_Make)))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1),
+                paste0(sum(total_data$Rim_Make), "/", sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)),
+                round(sum(total_data$Rim_Make)/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss))*100,1),
+                round(((sum(total_data$Rim_Make)+sum(total_data$Rim_Miss))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1),
+                paste0(sum(total_data$Mid_Make), "/", sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)),
+                round(sum(total_data$Mid_Make)/(sum(total_data$Mid_Make)+sum(total_data$Mid_Miss))*100,1),
+                round(((sum(total_data$Mid_Make)+sum(total_data$Mid_Miss))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1),
+                paste0(sum(total_data$Three_Make), "/", sum(total_data$Three_Make)+sum(total_data$Three_Miss)),
+                round(sum(total_data$Three_Make)/(sum(total_data$Three_Make)+sum(total_data$Three_Miss))*100,1),
+                round(((sum(total_data$Three_Make)+sum(total_data$Three_Miss))/(sum(total_data$Rim_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Make)+sum(total_data$Mid_Miss)+sum(total_data$Three_Make)+sum(total_data$Three_Miss)))*100,1))
+advanced_data[nrow(advanced_data) + 1,] <- advanced_totals_row
+advanced_data$eFG = as.numeric(as.character(advanced_data$eFG))
+
+full_practice_data <- cbind(urls, full_practice_data)
+basic_practice_data <- cbind(urls, basic_practice_data)
+advanced_data <- cbind(urls, advanced_data)
+
+full_practice_table <- full_practice_data %>%
+  gt() %>%
+  gt_theme_538() %>%
+  gt_highlight_rows(rows = c(2, 4, 6, 8, 10, 12, 14), fill = 'gray78', font_weight = 'normal', font_color = 'gray30') %>%
+  gt_highlight_rows(rows = c(16), fill = 'gray67') %>%
+  cols_label(urls = '', Player = md('**Player**'), Pts = md('**Pts**'), Rim = md('**Rim**'), Rim_Per = md('**Rim%**'), Mid = md('**Mid**'), Mid_Per = md('**Mid%**'), Three = md('**3pt.**'), Three_Per = md('**3pt%**'), Off_Reb = md('**OReb**'), ORB_per = md('**ORB%**'), Def_Reb = md('**DReb**'), Reb = md('**Reb**'), Ast = md('**Ast**'), Stl = md('**Stl**'), Blk = md('**Blk**'), Tov = md('**Tov**'), Charges = md('**Charges**'), Fouls = md('**Fouls**')) %>%
+  tab_header(title = md('**Practice Stat Sheet**'), subtitle = table_subtitle2) %>%
+  text_transform(locations = cells_body(vars(urls)), fn = function(x) {web_image(url = x, height = px(22.5))}) %>%
+  data_color(columns = c(Rim_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  data_color(columns = c(Mid_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  data_color(columns = c(Three_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  tab_options(table.background.color = 'gray89', heading.background.color = 'gray89', column_labels.background.color = 'gray89') %>%
+  tab_options(heading.title.font.size = 30, heading.subtitle.font.size = 15) %>%
+  gt_add_divider(Ast) %>%
+  gt_add_divider(Rim_Per) %>%
+  gt_add_divider(Mid_Per) %>%
+  gt_add_divider(Three_Per) %>%
+  tab_options(column_labels.font.size = 13) %>%
+  cols_align(align = c('center'), columns = vars(Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, ORB_per, Def_Reb, Stl, Blk, Tov, Charges, Fouls)) %>%
+  tab_source_note(source_note = paste0('Def FG%: ', Def_FG., '% | Possessions: ', possessions_total)) %>%
+  tab_options(source_notes.font.size = 22.5) %>%
+  gtsave(save_name4)
+
+basic_practice_table <- basic_practice_data %>%
+  gt() %>%
+  gt_theme_538() %>%
+  gt_highlight_rows(rows = c(2, 4, 6, 8, 10, 12, 14), fill = 'gray78', font_weight = 'normal', font_color = 'gray30') %>%
+  gt_highlight_rows(rows = c(16), fill = 'gray67') %>%
+  cols_label(urls = '', Player = md('**Player**'), Pts = md('**Pts**'), Two = md('**2pt.**'), Two_Per = md('**2pt%**'), Three = md('**3pt.**'), Three_Per = md('**3pt%**'), Off_Reb = md('**OReb**'), Def_Reb = md('**DReb**'), Reb = md('**Reb**'), Ast = md('**Ast**'), Stl = md('**Stl**'), Blk = md('**Blk**'), Tov = md('**Tov**'), Fouls = md('**Fouls**')) %>%
+  tab_header(title = md('**Practice Stat Sheet**'), subtitle = table_subtitle3) %>%
+  text_transform(locations = cells_body(vars(urls)), fn = function(x) {web_image(url = x, height = px(22.5))}) %>%
+  tab_options(table.background.color = 'gray89', heading.background.color = 'gray89', column_labels.background.color = 'gray89') %>%
+  tab_options(heading.title.font.size = 30, heading.subtitle.font.size = 15) %>%
+  cols_align(align = c('center'), columns = vars(Pts, Two, Two_Per, Three, Three_Per, Off_Reb, Def_Reb, Reb, Ast, Stl, Blk, Tov, Fouls)) %>%
+  gt_add_divider(Ast) %>%
+  gt_add_divider(Two_Per) %>%
+  gt_add_divider(Three_Per) %>%
+  tab_source_note(source_note = paste0('Possessions: ', possessions_total)) %>%
+  tab_options(source_notes.font.size = 22.5) %>%
+  gtsave(save_name5)
+
+advanced_data$Rim_Per <- as.numeric(advanced_data$Rim_Per)
+advanced_data$Mid_Per <- as.numeric(advanced_data$Mid_Per)
+advanced_data$Three_Per <- as.numeric(advanced_data$Three_Per)
+
+advanced_table <- advanced_data %>%
+  gt() %>%
+  gt_theme_538() %>%
+  gt_highlight_rows(rows = c(2, 4, 6, 8, 10, 12, 14), fill = 'gray78', font_weight = 'normal', font_color = 'gray30') %>%
+  gt_highlight_rows(rows = c(16), fill = 'gray67') %>%
+  cols_label(urls = '', Player = md('**Player**'), Pts = md('**Pts**'), eFG = md('**eFG%**'), Rim = md('**Rim**'), Rim_Per = md('**Rim%**'), Rim_par = md('**Att. Rate**'), Mid = md('**Mid**'), Mid_Per = md('**Mid%**'), Mid_par = md('**Att. Rate**'), Three = md('**3pt**'), Three_Per = md('**3pt%**'), Three_par = md('**Att. Rate**')) %>%
+  tab_header(title = md('**Advanced Stat Sheet**'), subtitle = table_subtitle4) %>%
+  text_transform(locations = cells_body(vars(urls)), fn = function(x) {web_image(url = x, height = px(22.5))}) %>%
+  tab_options(table.background.color = 'gray89', heading.background.color = 'gray89', column_labels.background.color = 'gray89') %>%
+  tab_options(heading.title.font.size = 30, heading.subtitle.font.size = 15) %>%
+  gt_add_divider(eFG) %>%
+  gt_add_divider(Rim_par) %>%
+  gt_add_divider(Mid_par) %>%
+  data_color(columns = c(Rim_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  data_color(columns = c(Mid_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  data_color(columns = c(Three_Per), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  tab_source_note(source_note = md('*Att. Rate - shots per 100 FGA*')) %>%
+  cols_align(align = c('center'), columns = vars(Pts, eFG, Rim, Rim_Per, Rim_par, Mid, Mid_Per, Mid_par, Three, Three_Per, Three_par)) %>%
+  data_color(columns = c(eFG), colors = scales::col_numeric(palette = paletteer::paletteer_d(palette = "RColorBrewer::RdYlGn") %>% as.character(), domain = NULL)) %>%
+  tab_source_note(source_note = paste0('Def FG%: ', Def_FG., '% | Possessions: ', possessions_total)) %>%
+  tab_options(source_notes.font.size = 22.5) %>%
+  gtsave(save_name6)
+```
+
+#frank totals
+```{r}
+FG_perc = round(as.numeric((sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make))/(sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Miss)+sum(total_data$Three_Miss)))*100,1)
+Def_FG_perc = 100 - FG_perc
+Three_perc = round(as.numeric(((sum(total_data$Three_Make))/(sum(total_data$Three_Make)+sum(total_data$Three_Miss))))*100,1)
+
+frank <- total_data %>%
+  mutate(
+    FG = paste0((Rim_Make+Mid_Make+Three_Make), '/', (Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss)),
+    '3P' = paste0((Three_Make), '/', (Three_Make+Three_Miss)),
+    ORB = Off_Reb,
+    'ORB%' = round((Off_Reb/(Off_Reb+Def_Reb))*100,1),
+    DRB = Def_Reb,
+    TRB = (Off_Reb+Def_Reb),
+    PTS = Pts,
+    AST = Ast,
+    TO = Tov,
+    STL = Stl,
+    BLK = Blk
+  ) %>%
+  select(Player, FG, '3P', ORB, 'ORB%', DRB, TRB, PTS, AST, TO, STL, BLK)
+frank[is.na(frank)] = 0
+total <- c(
+           "Totals",
+           paste0((sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make)), '/', (sum(total_data$Rim_Make)+sum(total_data$Mid_Make)+sum(total_data$Three_Make)+sum(total_data$Rim_Miss)+sum(total_data$Mid_Miss)+sum(total_data$Three_Miss))),
+           paste0((sum(total_data$Three_Make)), '/', (sum(total_data$Three_Make)+sum(total_data$Three_Miss))),
+           sum(total_data$Off_Reb),
+           round(((sum(total_data$Off_Reb))/(sum(total_data$Off_Reb)+sum(total_data$Def_Reb)))*100,1),
+           sum(total_data$Def_Reb),
+           (sum(total_data$Off_Reb)+sum(total_data$Def_Reb)),
+           sum(total_data$Pts),
+           sum(total_data$Ast),
+           sum(total_data$Tov),
+           sum(total_data$Stl),
+           sum(total_data$Blk)
+           )
+frank[nrow(frank)+1,] <- total
+frank <- cbind(urls, frank)
+
+frank_table <- frank %>%
+  gt() %>%
+  gt_theme_538() %>%
+  gt_highlight_rows(rows = c(2, 4, 6, 8, 10, 12, 14), fill = 'gray94', font_weight = 'normal', font_color = 'gray30') %>%
+  gt_highlight_rows(rows = c(16), fill = 'gray77') %>%
+  cols_label(urls = '', Player = md('**Player**'), FG = md('**FG**'), '3P' = md('**3P**'), ORB = md('**OReb**'), 'ORB%' = md('**OReb%**'), DRB = md('**DReb**'), TRB = md('**TRB**'), PTS = md('**PTS**'), AST = md('**AST**'), TO = md('**TOV**'), STL = md('**STL**'), BLK = md('**BLK**')) %>%
+  text_transform(locations = cells_body(vars(urls)), fn = function(x) {web_image(url = x, height = px(22.5))}) %>%
+  tab_header(title = md('**Total Practice Stat Sheet**'), subtitle = paste0(table_subtitle5)) %>%
+  tab_options(table.background.color = 'gray89', heading.background.color = 'gray89', column_labels.background.color = 'gray89') %>%
+  tab_options(heading.title.font.size = 30, heading.subtitle.font.size = 15) %>%
+  gt_add_divider('3P') %>%
+  gt_add_divider(TRB) %>%
+  tab_options(column_labels.font.size = 13) %>%
+  cols_align(align = c('center'), columns = vars(FG, '3P', ORB, 'ORB%', DRB, TRB, PTS, AST, TO, STL, BLK)) %>%
+  tab_source_note(source_note = paste0('FG%: ', FG_perc, '%  |  Def FG%: ', Def_FG_perc, '%  |  3pt%: ', Three_perc, '%  |  Possessions: ', possessions_total)) %>%
+  tab_options(source_notes.font.size = 15) %>%
+  gtsave(save_name7)
+```
+

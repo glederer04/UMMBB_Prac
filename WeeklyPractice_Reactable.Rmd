@@ -1,0 +1,462 @@
+---
+title: "WeeklyPractice_Reactable"
+author: "Greg"
+date: "2023-09-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac")
+```
+
+#packages
+```{r}
+library(dplyr)
+library(reactable)
+library(htmltools)
+library(ggsci)
+library(RColorBrewer)
+library(htmlwidgets)
+library(tidyverse)
+```
+
+#data
+```{r}
+week <- '10.9 - 10.15'
+practice_data <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/23-24 Practice Stat Sheet - Weekly Totals.csv')
+possessions <- practice_data$X.1[19]
+urls <- c('https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRollie_Castineyra_CgC7L.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJosh_MYSjy.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJackson_Cronin_SdErY.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMatt_q1H5m.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJaylen_HWhjg.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRobert_F5SIh.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRahsool_Diggins_nOrSz.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FTarique_Foster_JV3ru.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FDaniel_Hankins_Sanford_d3tPh.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMathok_PYwqm.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRyan_Marcus_zHwGy.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https://dxbhsrqyrr690.cloudfront.net/sidearm.nextgen.sites/umassathletics.com/images/2023/5/18/Mayhugh_Sawyer.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJayden_Ndjigue_uDraA.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FKeon_Thompson_j7lVX.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMarqui_Worthy_fB7nD.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1200px-UMass_Amherst_athletics_logo.svg.png')
+save_name1 <- paste0(week, ' | Practice Stats.html')
+save_name2 <- paste0(week, ' | Advanced Stats.html')
+save_name3 <- paste0(week, ' | Per70 Stats.html')
+
+save_name1_csv <- paste0(week, ' | Practice Stats.csv')
+save_name2_csv <- paste0(week, ' | Advanced Stats.csv')
+save_name3_csv <- paste0(week, ' | Per70 Stats.csv')
+```
+
+#fix
+```{r}
+practice_data <- practice_data[-(17:32),]
+practice_data <- practice_data[-1,]
+
+colnames(practice_data)[1] = 'Player'
+colnames(practice_data)[2] = 'Pts'
+colnames(practice_data)[3] = 'Rim_Make'
+colnames(practice_data)[4] = 'Rim_Miss'
+colnames(practice_data)[5] = 'Mid_Make'
+colnames(practice_data)[6] = 'Mid_Miss'
+colnames(practice_data)[7] = 'Three_Make'
+colnames(practice_data)[8] = 'Three_Miss'
+colnames(practice_data)[9] = 'Off_Reb'
+colnames(practice_data)[10] = 'Def_Reb'
+colnames(practice_data)[11] = 'Ast'
+colnames(practice_data)[12] = 'Stl'
+colnames(practice_data)[13] = 'Blk'
+colnames(practice_data)[14] = 'Tov'
+colnames(practice_data)[15] = 'Charges'
+colnames(practice_data)[16] = 'Fouls'
+
+practice_data$Pts <- as.numeric(practice_data$Pts)
+practice_data$Rim_Make <- as.numeric(practice_data$Rim_Make)
+practice_data$Rim_Miss <- as.numeric(practice_data$Rim_Miss)
+practice_data$Mid_Make <- as.numeric(practice_data$Mid_Make)
+practice_data$Mid_Miss <- as.numeric(practice_data$Mid_Miss)
+practice_data$Three_Make <- as.numeric(practice_data$Three_Make)
+practice_data$Three_Miss <- as.numeric(practice_data$Three_Miss)
+practice_data$Off_Reb <- as.numeric(practice_data$Off_Reb)
+practice_data$Def_Reb <- as.numeric(practice_data$Def_Reb)
+practice_data$Ast <- as.numeric(practice_data$Ast)
+practice_data$Stl <- as.numeric(practice_data$Stl)
+practice_data$Blk <- as.numeric(practice_data$Blk)
+practice_data$Tov <- as.numeric(practice_data$Tov)
+practice_data$Charges <- as.numeric(practice_data$Charges)
+practice_data$Fouls <- as.numeric(practice_data$Fouls)
+```
+
+#full data
+```{r}
+practice_data[is.na(practice_data)] = 0
+
+full_practice_data <- practice_data %>%
+  mutate(Rim_Per = round(Rim_Make/(Rim_Make+Rim_Miss)*100, 1),
+         Mid_Per = round(Mid_Make/(Mid_Make+Mid_Miss)*100, 1),
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         Reb = Off_Reb+Def_Reb) %>%
+  select(Player, Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, Def_Reb, Stl, Blk, Tov, Charges, Fouls) 
+
+full_practice_data[is.na(full_practice_data)] = 0
+```
+
+#full totals row
+```{r}
+full_totals_row <- c(
+                "Totals",
+                sum(practice_data$Pts),
+                sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb),
+                sum(practice_data$Ast),
+                paste0(sum(practice_data$Rim_Make), "/", sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)),
+                round(sum(practice_data$Rim_Make)/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss))*100,1),
+                paste0(sum(practice_data$Mid_Make), "/", sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)),
+                round(sum(practice_data$Mid_Make)/(sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss))*100,1),
+                paste0(sum(practice_data$Three_Make), "/", sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)),
+                round(sum(practice_data$Three_Make)/(sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))*100,1),
+                sum(practice_data$Off_Reb),
+                sum(practice_data$Def_Reb),
+                sum(practice_data$Stl),
+                sum(practice_data$Blk),
+                sum(practice_data$Tov),
+                sum(practice_data$Charges),
+                sum(practice_data$Fouls)
+                )
+full_practice_data[nrow(full_practice_data) + 1,] <- full_totals_row
+
+full_practice_data$Rim_Per = as.numeric(as.character(full_practice_data$Rim_Per))
+full_practice_data$Mid_Per = as.numeric(as.character(full_practice_data$Mid_Per))
+full_practice_data$Three_Per = as.numeric(as.character(full_practice_data$Three_Per))
+
+full_practice_data <- cbind(urls, full_practice_data)
+```
+
+#advanced data
+```{r}
+advanced_data <- practice_data %>%
+  mutate(Rim_par = round(((Rim_Make+Rim_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         Mid_par = round(((Mid_Make+Mid_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         Three_par = round(((Three_Make+Three_Miss)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100, 1),
+         eFG = round((((Rim_Make+Mid_Make+Three_Make)+(0.5*Three_Make))/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100,1),
+         FG. = round(((Rim_Make+Mid_Make+Three_Make)/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss))*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         PPS = round((Pts/(Rim_Make+Rim_Miss+Mid_Make+Mid_Miss+Three_Make+Three_Miss)),1)) %>%
+  select(Player, Pts, FG., eFG, PPS, Rim, Mid, Three, Rim_par, Mid_par, Three_par)
+advanced_data[is.na(advanced_data)] <- 0
+```
+
+#advanced total row
+```{r}
+advanced_totals_row <- c("Totals", 
+                sum(practice_data$Pts), 
+                round(((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make))/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)))*100,1),
+                round((((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make))+(0.5*sum(practice_data$Three_Make)))/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)))*100,1),
+                round((sum(practice_data$Pts)/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))),1),
+                paste0(sum(practice_data$Rim_Make), "/", sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)),
+                paste0(sum(practice_data$Mid_Make), "/", sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)),
+                paste0(sum(practice_data$Three_Make), "/", sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)),
+                round(((sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss))/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)))*100,1),
+                round(((sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss))/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)))*100,1),
+                round(((sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))/(sum(practice_data$Rim_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Make)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Make)+sum(practice_data$Three_Miss)))*100,1))
+
+advanced_data[nrow(advanced_data) + 1,] <- advanced_totals_row
+
+advanced_data$eFG = as.numeric(as.character(advanced_data$eFG))
+
+advanced_data <- cbind(urls, advanced_data)
+```
+
+#per 70
+```{r}
+per70 <- practice_data
+
+per70_totals <- c('Totals',
+                  sum(practice_data$Pts),
+                  sum(practice_data$Rim_Make),
+                  sum(practice_data$Rim_Miss),
+                  sum(practice_data$Mid_Make),
+                  sum(practice_data$Mid_Miss),
+                  sum(practice_data$Three_Make),
+                  sum(practice_data$Three_Miss),
+                  sum(practice_data$Off_Reb),
+                  sum(practice_data$Def_Reb),
+                  sum(practice_data$Ast),
+                  sum(practice_data$Stl),
+                  sum(practice_data$Blk),
+                  sum(practice_data$Tov),
+                  sum(practice_data$Charges),
+                  sum(practice_data$Fouls))
+
+per70[nrow(per70)+1,] <- per70_totals
+
+per70 <- per70 %>%
+  mutate(Pts = round(as.numeric(Pts) / (as.numeric(possessions) / 70),1),
+         Rim_Make = round(as.numeric(Rim_Make) / (as.numeric(possessions) / 70),1),
+         Rim_Miss = round(as.numeric(Rim_Miss) / (as.numeric(possessions) / 70),1),
+         Mid_Make = round(as.numeric(Mid_Make) / (as.numeric(possessions) / 70),1),
+         Mid_Miss = round(as.numeric(Mid_Miss) / (as.numeric(possessions) / 70),1),
+         Three_Make = round(as.numeric(Three_Make) / (as.numeric(possessions) / 70),1),
+         Three_Miss = round(as.numeric(Three_Miss) / (as.numeric(possessions) / 70),1),
+         Off_Reb = round(as.numeric(Off_Reb) / (as.numeric(possessions) / 70),1),
+         Def_Reb = round(as.numeric(Def_Reb) / (as.numeric(possessions) / 70),1),
+         Ast = round(as.numeric(Ast) / (as.numeric(possessions) / 70),1),
+         Stl = round(as.numeric(Stl) / (as.numeric(possessions) / 70),1),
+         Blk = round(as.numeric(Blk) / (as.numeric(possessions) / 70),1),
+         Tov = round(as.numeric(Tov) / (as.numeric(possessions) / 70),1),
+         Charges = round(as.numeric(Charges) / (as.numeric(possessions) / 70),1),
+         Fouls = round(as.numeric(Fouls) / (as.numeric(possessions) / 70),1))
+
+per70 <- per70 %>%
+  mutate(Rim_Per = round(Rim_Make/(Rim_Make+Rim_Miss)*100, 1),
+         Mid_Per = round(Mid_Make/(Mid_Make+Mid_Miss)*100, 1),
+         Three_Per = round(Three_Make/(Three_Make+Three_Miss)*100,1),
+         Rim = paste0(Rim_Make, "/", Rim_Make+Rim_Miss),
+         Mid = paste0(Mid_Make, "/", Mid_Make+Mid_Miss),
+         Three = paste0(Three_Make, "/", Three_Make+Three_Miss),
+         Reb = Off_Reb+Def_Reb) %>%
+  select(Player, Pts, Reb, Ast, Rim, Rim_Per, Mid, Mid_Per, Three, Three_Per, Off_Reb, Def_Reb, Stl, Blk, Tov, Charges, Fouls) 
+
+per70[is.na(per70)] = 0
+
+per70 <- cbind(urls, per70)
+```
+
+#full data reactable
+```{r}
+write.csv(full_practice_data, file = save_name1_csv)
+rownames(full_practice_data) <- NULL
+
+rim_normalized <- (full_practice_data$Rim_Per - min(full_practice_data$Rim_Per)) / 
+                  (max(full_practice_data$Rim_Per) - min(full_practice_data$Rim_Per))
+rim_normalized <- pmax(0, pmin(1, rim_normalized))
+rim_colors <- rgb(colorRamp(c("#DCF8C7", "#3E8F00"))(rim_normalized), maxColorValue = 255)
+
+mid_normalized <- (full_practice_data$Mid_Per - min(full_practice_data$Mid_Per)) / 
+                  (max(full_practice_data$Mid_Per) - min(full_practice_data$Mid_Per))
+mid_normalized <- pmax(0, pmin(1, mid_normalized))
+mid_colors <- rgb(colorRamp(c("#DCF8C7", "#3E8F00"))(mid_normalized), maxColorValue = 255)
+
+three_normalized <- (full_practice_data$Three_Per - min(full_practice_data$Three_Per)) / 
+                  (max(full_practice_data$Three_Per) - min(full_practice_data$Three_Per))
+three_normalized <- pmax(0, pmin(1, three_normalized))
+#three_normalized[is.na(three_normalized)] <- 0.5
+three_colors <- rgb(colorRamp(c("#DCF8C7", "#3E8F00"))(three_normalized), maxColorValue = 255)
+
+complete_totals <- reactable(
+  full_practice_data,
+  striped = TRUE,
+  highlight = TRUE,
+  bordered = FALSE,
+  theme = reactableTheme(
+    stripedColor = '#f0f0f0',
+    backgroundColor = '#E3E3E3',
+    borderColor = 'black'
+  ),
+  columns = list(
+    urls = colDef(name = '', cell = function(value) {
+        div(style = "text-align: center;", tags$img(src = value, width = "35px", height = "auto"))
+      },minWidth = 50, sticky = 'left'),
+    Player = colDef(name = 'Player', minWidth = 175, filterable = TRUE, sticky = 'left'), 
+    Pts = colDef(name = 'Pts', minWidth = 60, align = 'center'), 
+    Reb = colDef(name = 'Reb', minWidth = 60, align = 'center'), 
+    Ast = colDef(name = 'Ast', minWidth = 60, align = 'center'), 
+    Rim = colDef(name = 'Rim', minWidth = 65, align = 'right'), 
+    Rim_Per = colDef(name = 'Rim%', minWidth = 80,align = 'left', style = JS("function(rowInfo, column, state) {
+        const { showColors, rim_colors } = state.meta
+        if (showColors) {
+          return { backgroundColor: rim_colors[rowInfo.index] }
+        }
+      }")),
+    Mid = colDef(name = 'Mid', minWidth = 65, align = 'right'), 
+    Mid_Per = colDef(name = 'Mid%', minWidth = 80, align = 'left', style = JS("function(rowInfo, column, state) {
+        const { showColors, mid_colors } = state.meta
+        if (showColors) {
+          return { backgroundColor: mid_colors[rowInfo.index] }
+        }
+      }")),
+    Three = colDef(name = '3pt', minWidth = 60, align = 'right'),
+    Three_Per = colDef(name = '3pt%', minWidth = 70, align = 'left', style = JS("function(rowInfo, column, state) {
+        const { showColors, three_colors } = state.meta
+        if (showColors) {
+          return { backgroundColor: three_colors[rowInfo.index] }
+        }
+      }")),
+    Off_Reb = colDef(name = 'OReb', minWidth = 75, align = 'center'),
+    Def_Reb = colDef(name = 'DReb', minWidth = 75, align = 'center'),
+    Stl = colDef(name = 'Stl', minWidth = 60, align = 'center'),
+    Blk = colDef(name = 'Blk', minWidth = 60, align = 'center'),
+    Tov = colDef(name = 'Tov', minWidth = 60, align = 'center'),
+    Charges = colDef(name = 'Charges', minWidth = 90, align = 'center'),
+    Fouls = colDef(name = 'Fouls', minWidth = 70, align = 'center')
+  ),
+  rowStyle = function(row) {
+    list(height = '45px')
+  },
+  meta = list(rim_colors = rim_colors,
+              mid_colors = mid_colors,
+              three_colors = three_colors,
+              showColors = TRUE),
+  defaultPageSize = 16,
+  elementId = 'practice-tbl'
+)
+complete_totals
+#saveWidget(complete_totals, save_name1)
+```
+
+#per70 reactable
+```{r}
+write.csv(per70, file = save_name3_csv)
+rownames(per70) <- NULL
+
+rim_normalized <- (per70$Rim_Per - min(per70$Rim_Per)) / 
+                  (max(per70$Rim_Per) - min(per70$Rim_Per))
+rim_normalized <- pmax(0, pmin(1, rim_normalized))
+rim_colors <- rgb(colorRamp(c("#DCF8C7", "#3E8F00"))(rim_normalized), maxColorValue = 255)
+
+mid_normalized <- (per70$Mid_Per - min(per70$Mid_Per)) / 
+                  (max(per70$Mid_Per) - min(per70$Mid_Per))
+mid_normalized <- pmax(0, pmin(1, mid_normalized))
+mid_colors <- rgb(colorRamp(c("#DCF8C7", "#3E8F00"))(mid_normalized), maxColorValue = 255)
+
+three_normalized <- (per70$Three_Per - min(per70$Three_Per)) / 
+                  (max(per70$Three_Per) - min(per70$Three_Per))
+three_normalized <- pmax(0, pmin(1, three_normalized))
+#three_normalized[is.na(three_normalized)] <- 0.5
+three_colors <- rgb(colorRamp(c("#DCF8C7", "#3E8F00"))(three_normalized), maxColorValue = 255)
+
+per70_tbl <- reactable(
+  per70,
+  striped = TRUE,
+  highlight = TRUE,
+  bordered = FALSE,
+  theme = reactableTheme(
+    stripedColor = '#f0f0f0',
+    backgroundColor = '#E3E3E3',
+    borderColor = 'black'
+  ),
+  columns = list(
+    urls = colDef(name = '', cell = function(value) {
+        div(style = "text-align: center;", tags$img(src = value, width = "35px", height = "auto"))
+      },minWidth = 50, sticky = 'left'),
+    Player = colDef(name = 'Player', minWidth = 175, filterable = TRUE, sticky = 'left'), 
+    Pts = colDef(name = 'Pts', minWidth = 60, align = 'center'), 
+    Reb = colDef(name = 'Reb', minWidth = 60, align = 'center'), 
+    Ast = colDef(name = 'Ast', minWidth = 60, align = 'center'), 
+    Rim = colDef(name = 'Rim', minWidth = 80, align = 'right'), 
+    Rim_Per = colDef(name = 'Rim%', minWidth = 80,align = 'left', style = JS("function(rowInfo, column, state) {
+        const { showColors, rim_colors } = state.meta
+        if (showColors) {
+          return { backgroundColor: rim_colors[rowInfo.index] }
+        }
+      }")),
+    Mid = colDef(name = 'Mid', minWidth = 80, align = 'right'), 
+    Mid_Per = colDef(name = 'Mid%', minWidth = 80, align = 'left', style = JS("function(rowInfo, column, state) {
+        const { showColors, mid_colors } = state.meta
+        if (showColors) {
+          return { backgroundColor: mid_colors[rowInfo.index] }
+        }
+      }")),
+    Three = colDef(name = '3pt', minWidth = 80, align = 'right'),
+    Three_Per = colDef(name = '3pt%', minWidth = 70, align = 'left', style = JS("function(rowInfo, column, state) {
+        const { showColors, three_colors } = state.meta
+        if (showColors) {
+          return { backgroundColor: three_colors[rowInfo.index] }
+        }
+      }")),
+    Off_Reb = colDef(name = 'OReb', minWidth = 75, align = 'center'),
+    Def_Reb = colDef(name = 'DReb', minWidth = 75, align = 'center'),
+    Stl = colDef(name = 'Stl', minWidth = 60, align = 'center'),
+    Blk = colDef(name = 'Blk', minWidth = 60, align = 'center'),
+    Tov = colDef(name = 'Tov', minWidth = 60, align = 'center'),
+    Charges = colDef(name = 'Charges', minWidth = 90, align = 'center'),
+    Fouls = colDef(name = 'Fouls', minWidth = 70, align = 'center')
+  ),
+  rowStyle = function(row) {
+    list(height = '45px')
+  },
+  meta = list(rim_colors = rim_colors,
+              mid_colors = mid_colors,
+              three_colors = three_colors,
+              showColors = TRUE),
+  defaultPageSize = 16,
+  elementId = 'practice-tbl'
+)
+per70_tbl
+#saveWidget(per70_tbl, save_name3)
+```
+
+#advanced reactable
+```{r}
+write.csv(advanced_data, file = save_name2_csv)
+rownames(advanced_data) <- NULL
+advanced_data$FG. <- as.numeric(advanced_data$FG.)
+
+fg_normalized <- (advanced_data$FG. - min(advanced_data$FG.)) / 
+                  (max(advanced_data$FG.) - min(advanced_data$FG.))
+fg_normalized <- pmax(0, pmin(1, fg_normalized))
+fg_colors <- rgb(colorRamp(c("#DCF8C7", "#3E8F00"))(fg_normalized), maxColorValue = 255)
+
+efg_normalized <- (advanced_data$eFG - min(advanced_data$eFG)) / 
+                  (max(advanced_data$eFG) - min(advanced_data$eFG))
+efg_normalized <- pmax(0, pmin(1, efg_normalized))
+efg_colors <- rgb(colorRamp(c("#DCF8C7", "#3E8F00"))(efg_normalized), maxColorValue = 255)
+
+advanced_tbl <- reactable(
+  advanced_data,
+  striped = TRUE,
+  highlight = TRUE,
+  bordered = FALSE,
+  theme = reactableTheme(
+    stripedColor = '#f0f0f0',
+    backgroundColor = '#E3E3E3',
+    borderColor = 'black'
+  ),
+  columns = list(
+    urls = colDef(name = '', cell = function(value) {
+        div(style = "text-align: center;", tags$img(src = value, width = "35px", height = "auto"))
+      },minWidth = 50, sticky = 'left'),
+    Player = colDef(name = 'Player', minWidth = 175, filterable = TRUE, sticky = 'left'), 
+    Pts = colDef(name = 'Pts', minWidth = 60, align = 'center'),
+    FG. = colDef(name = 'FG%', minWidth = 80,align = 'center', style = JS("function(rowInfo, column, state) {
+        const { showColors, fg_colors } = state.meta
+        if (showColors) {
+          return { backgroundColor: fg_colors[rowInfo.index] }
+        }
+      }")),
+    eFG = colDef(name = 'eFG%', minWidth = 80,align = 'center', style = JS("function(rowInfo, column, state) {
+        const { showColors, efg_colors } = state.meta
+        if (showColors) {
+          return { backgroundColor: efg_colors[rowInfo.index] }
+        }
+      }")),
+    PPS = colDef(name = 'PPS', minWidth = 75, align = 'center'),
+    Rim = colDef(name = 'Rim', minWidth = 80, align = 'center'),
+    Mid = colDef(name = 'Mid', minWidth = 80, align = 'center'),
+    Three = colDef(name = '3pt', minWidth = 80, align = 'center'),
+    Rim_par = colDef(name = 'Rim', minWidth = 75, align = 'center'),
+    Mid_par = colDef(name = 'Mid', minWidth = 75, align = 'center'),
+    Three_par = colDef(name = '3pt', minWidth = 75, align = 'center')),
+  rowStyle = function(row) {
+    list(height = '45px')
+  },
+  meta = list(fg_colors = fg_colors,
+              efg_colors = efg_colors,
+              showColors = TRUE),
+  defaultPageSize = 16,
+  elementId = 'practice-tbl',
+  columnGroups = list(
+    colGroup(name = 'Attempts per 100 FGA', columns = c('Rim_par', 'Mid_par', 'Three_par'))
+  )
+)
+advanced_tbl
+#saveWidget(advanced_tbl, save_name2)
+```
+

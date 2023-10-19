@@ -1,0 +1,156 @@
+---
+title: "FrankWeekly_StatSheet"
+author: "Greg"
+date: "2023-10-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac")
+```
+
+#packages
+```{r}
+library(gt)
+library(gtExtras)
+library(gtsummary)
+library(dplyr)
+library(tidyverse)
+```
+
+#data
+```{r}
+week <- '10.16 - 10.22' #monday to sunday
+
+table_subtitle <- paste0(week, " | Complete Totals")
+save_name <- paste0(week, " - Frank Weekly Stat Sheet.png")
+```
+
+#get data
+```{r}
+practice_data <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/23-24 Practice Stat Sheet - Weekly Totals.csv')
+urls <- c('https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRollie_Castineyra_CgC7L.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJosh_MYSjy.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJackson_Cronin_SdErY.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMatt_q1H5m.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJaylen_HWhjg.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRobert_F5SIh.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRahsool_Diggins_nOrSz.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FTarique_Foster_JV3ru.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FDaniel_Hankins_Sanford_d3tPh.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMathok_PYwqm.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRyan_Marcus_zHwGy.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https://dxbhsrqyrr690.cloudfront.net/sidearm.nextgen.sites/umassathletics.com/images/2023/5/18/Mayhugh_Sawyer.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FJayden_Ndjigue_uDraA.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FKeon_Thompson_j7lVX.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FMarqui_Worthy_fB7nD.jpg&width=100&height=100&gravity=north&type=webp',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/UMass_Amherst_athletics_logo.svg/1200px-UMass_Amherst_athletics_logo.svg.png')
+```
+
+#fix data
+```{r}
+possessions <- as.numeric(practice_data$X.1[19])
+
+practice_data <- practice_data[-(17:32),]
+practice_data <- practice_data[-1,]
+
+colnames(practice_data)[1] = 'Player'
+colnames(practice_data)[2] = 'Pts'
+colnames(practice_data)[3] = 'Rim_Make'
+colnames(practice_data)[4] = 'Rim_Miss'
+colnames(practice_data)[5] = 'Mid_Make'
+colnames(practice_data)[6] = 'Mid_Miss'
+colnames(practice_data)[7] = 'Three_Make'
+colnames(practice_data)[8] = 'Three_Miss'
+colnames(practice_data)[9] = 'Off_Reb'
+colnames(practice_data)[10] = 'Def_Reb'
+colnames(practice_data)[11] = 'Ast'
+colnames(practice_data)[12] = 'Stl'
+colnames(practice_data)[13] = 'Blk'
+colnames(practice_data)[14] = 'Tov'
+colnames(practice_data)[15] = 'Charges'
+colnames(practice_data)[16] = 'Fouls'
+
+practice_data$Pts <- as.numeric(practice_data$Pts)
+practice_data$Rim_Make <- as.numeric(practice_data$Rim_Make)
+practice_data$Rim_Miss <- as.numeric(practice_data$Rim_Miss)
+practice_data$Mid_Make <- as.numeric(practice_data$Mid_Make)
+practice_data$Mid_Miss <- as.numeric(practice_data$Mid_Miss)
+practice_data$Three_Make <- as.numeric(practice_data$Three_Make)
+practice_data$Three_Miss <- as.numeric(practice_data$Three_Miss)
+practice_data$Off_Reb <- as.numeric(practice_data$Off_Reb)
+practice_data$Def_Reb <- as.numeric(practice_data$Def_Reb)
+practice_data$Ast <- as.numeric(practice_data$Ast)
+practice_data$Stl <- as.numeric(practice_data$Stl)
+practice_data$Blk <- as.numeric(practice_data$Blk)
+practice_data$Tov <- as.numeric(practice_data$Tov)
+practice_data$Charges <- as.numeric(practice_data$Charges)
+practice_data$Fouls <- as.numeric(practice_data$Fouls)
+
+FG_perc = round(as.numeric((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make))/(sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Miss)))*100,1)
+Def_FG_perc = 100 - FG_perc
+Three_perc = round(as.numeric(((sum(practice_data$Three_Make))/(sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))))*100,1)
+```
+
+#made df
+```{r}
+practice_data[is.na(practice_data)] = 0
+
+frank <- practice_data %>%
+  mutate(
+    FG = paste0((Rim_Make+Mid_Make+Three_Make), '/', (Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss)),
+    '3P' = paste0((Three_Make), '/', (Three_Make+Three_Miss)),
+    ORB = Off_Reb,
+    'ORB%' = round((Off_Reb/(Off_Reb+Def_Reb))*100,1),
+    DRB = Def_Reb,
+    TRB = (Off_Reb+Def_Reb),
+    PTS = Pts,
+    AST = Ast,
+    TO = Tov,
+    STL = Stl,
+    BLK = Blk
+  ) %>%
+  select(Player, FG, '3P', ORB, 'ORB%', DRB, TRB, PTS, AST, TO, STL, BLK)
+frank[is.na(frank)] = 0
+
+total <- c(
+           "Totals",
+           paste0((sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make)), '/', (sum(practice_data$Rim_Make)+sum(practice_data$Mid_Make)+sum(practice_data$Three_Make)+sum(practice_data$Rim_Miss)+sum(practice_data$Mid_Miss)+sum(practice_data$Three_Miss))),
+           paste0((sum(practice_data$Three_Make)), '/', (sum(practice_data$Three_Make)+sum(practice_data$Three_Miss))),
+           sum(practice_data$Off_Reb),
+           round(((sum(practice_data$Off_Reb))/(sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb)))*100,1),
+           sum(practice_data$Def_Reb),
+           (sum(practice_data$Off_Reb)+sum(practice_data$Def_Reb)),
+           sum(practice_data$Pts),
+           sum(practice_data$Ast),
+           sum(practice_data$Tov),
+           sum(practice_data$Stl),
+           sum(practice_data$Blk)
+           )
+frank[nrow(frank)+1,] <- total
+
+frank <- cbind(urls, frank)
+```
+
+#make table
+```{r}
+frank_table <- frank %>%
+  gt() %>%
+  gt_theme_538() %>%
+  gt_highlight_rows(rows = c(2, 4, 6, 8, 10, 12, 14), fill = 'gray94', font_weight = 'normal', font_color = 'gray30') %>%
+  gt_highlight_rows(rows = c(16), fill = 'gray77') %>%
+  cols_label(urls = '', Player = md('**Player**'), FG = md('**FG**'), '3P' = md('**3P**'), ORB = md('**OReb**'), 'ORB%' = md('**OReb%**'), DRB = md('**DReb**'), TRB = md('**TRB**'), PTS = md('**PTS**'), AST = md('**AST**'), TO = md('**TOV**'), STL = md('**STL**'), BLK = md('**BLK**')) %>%
+  text_transform(locations = cells_body(vars(urls)), fn = function(x) {web_image(url = x, height = px(22.5))}) %>%
+  tab_header(title = md('**Weekly Practice Stat Sheet**'), subtitle = paste0(table_subtitle)) %>%
+  tab_options(table.background.color = 'gray89', heading.background.color = 'gray89', column_labels.background.color = 'gray89') %>%
+  tab_options(heading.title.font.size = 30, heading.subtitle.font.size = 15) %>%
+  gt_add_divider('3P') %>%
+  gt_add_divider(TRB) %>%
+  tab_options(column_labels.font.size = 13) %>%
+  cols_align(align = c('center'), columns = vars(FG, '3P', ORB, 'ORB%', DRB, TRB, PTS, AST, TO, STL, BLK)) %>%
+  tab_source_note(source_note = paste0('FG%: ', FG_perc, '%  |  Def FG%: ', Def_FG_perc, '%  |  3pt%: ', Three_perc, '%  |  Possessions: ', possessions)) %>%
+  tab_options(source_notes.font.size = 15) %>%
+  gtsave(save_name)
+```
+
