@@ -21,7 +21,7 @@ library(gtExtras)
 
 #input
 ```{r}
-week <- '10.9 - 10.15' #monday to sunday
+week <- '10.30 - 11.05' #monday to sunday
 
 table_subtitle1 <- paste0(week, " | Complete Totals")
 table_subtitle2 <- paste0(week, " | Basic Totals")
