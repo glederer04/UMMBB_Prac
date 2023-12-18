@@ -23,7 +23,7 @@ library(tidyverse)
 
 #data
 ```{r}
-week <- '10.30 - 11.05'
+week <- '11.20 - 11.26'
 practice_data <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/23-24 Practice Stat Sheet - Weekly Totals.csv')
 possessions <- practice_data$X.1[19]
 urls <- c('https://images.sidearmdev.com/crop?url=https%3A%2F%2Fdxbhsrqyrr690.cloudfront.net%2Fsidearm.nextgen.sites%2Fumassathletics.com%2Fimages%2F2023%2F10%2F10%2FRollie_Castineyra_CgC7L.jpg&width=100&height=100&gravity=north&type=webp',

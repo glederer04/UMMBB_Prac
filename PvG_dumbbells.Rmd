@@ -1,0 +1,266 @@
+---
+title: "PracVGameDumbells"
+author: "Greg"
+date: "2023-11-13"
+output: html_document
+---
+
+**RUN AFTER ADDING STUFF IN FOLDER**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/UMassPractice23-24")
+```
+
+#packages
+```{r}
+library(tidyverse)
+library(dplyr)
+library(hoopR)
+library(toRvik)
+library(bigballR)
+library(ncaahoopR)
+library(ggplot2)
+library(ggdist)
+library(ggalt)
+```
+
+#get data
+```{r}
+game_ids <- c('5563339', '5569050', '5571845', '5575711', '5581138', '5583867', '5584950', '5588219')
+player_names <- c('Daniel Hankins-Sanford', 'Jayden Ndjigue', 'Jaylen Curry', 'Josh Cohen', 'Keon Thompson', 'Marqui Worthy', 'Mathok Majok', 'Matt Cross', 'Rahsool Diggins', 'Robert Davis Jr.', 'Rollie Castineyra', 'Ryan Marcus', 'Tarique Foster')
+not_played_yet <- 'Jackson Cronin'
+
+practice <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/UMassPractice23-24/Team Totals.csv')
+game <- get_player_stats(play_by_play_data = get_play_by_play(game_ids = game_ids), multi.games = T, simple = F)
+```
+
+#fix tables
+```{r}
+practice <- practice[,-1]
+practice <- practice[,-c(27:28)]
+practice <- practice[,-30]
+game <- game %>%
+  filter(Team == 'Massachusetts')
+game <- game[,-c(32:113)]
+game <- game[,-c(2:6)]
+game$Player <- player_names
+#--
+for (i in 1:nrow(practice)) {
+  if (not_played_yet == practice$Player[i]) {
+    practice <- practice[-i,]
+    return(practice)
+  }
+}
+#--
+game <- game %>%
+  mutate(
+    Rim.Attempts.per.100.FGA = round((RIMA/FGA)*100,1),
+    Mid.Attempts.per.100.FGA = round((MIDA/FGA)*100,1),
+    X3pt.Attempts.per.100.FGA = round((TPA/FGA)*100,1),
+    X2pt. = round(((RIMM+MIDM)/(RIMA+MIDA))*100,1),
+    Ast.per.100.Tov = round((AST/TOV)*100,1),
+    Ast.per.100.FGA = round((AST/FGA)*100,1),
+    Points.per.Shot = round((PTS/FGA),1),
+    Rebounds = ORB+DRB
+  ) %>%
+  rename(
+    Points = PTS,
+    Assists = AST,
+    Rim.Makes = RIMM,
+    Rim.Attempts = RIMA,
+    Rim. = RIM.,
+    Mid.Makes = MIDM,
+    Mid.Attempts = MIDA,
+    Mid. = MID.,
+    X3pt.Makes = TPM,
+    X3pt.Attempts = TPA,
+    X3pt. = TP.,
+    Off..Reb = ORB,
+    Def..Reb = DRB,
+    Steals = STL,
+    Blocks = BLK,
+    Turnovers = TOV
+  ) %>%
+  select(
+    Player, Points, Rebounds, Assists, FG., FGA, FGM, eFG., Rim.Makes, Rim.Attempts, Rim., Rim.Attempts.per.100.FGA, Mid.Makes, Mid.Attempts, Mid., Mid.Attempts.per.100.FGA, X2pt., X3pt.Makes, X3pt.Attempts, X3pt., X3pt.Attempts.per.100.FGA, Off..Reb, Def..Reb, Steals, Blocks, Turnovers, Ast.per.100.Tov, Ast.per.100.FGA, Points.per.Shot
+  )
+
+game$FG. <- round(game$FG.*100,1)
+game$Rim. <- round(game$Rim.*100,1)
+game$eFG. <- round(game$eFG.*100,1)
+game$Mid. <- round(game$Mid.*100,1)
+game$X3pt. <- round(game$X3pt.*100,1)
+
+game[is.na(game)] = 0
+```
+
+#plot
+```{r}
+merged_data <- merge(practice, game, by = 'Player')
+
+merged_data <- merged_data %>%
+  rename(
+    Points_prac = Points.x,
+    Points_game = Points.y,
+    Rebounds_prac = Rebounds.x,
+    Rebounds_game = Rebounds.y,
+    Assists_prac = Assists.x,
+    Assists_game = Assists.y,
+    'FG%_prac' = FG..x,
+    'FG%_game' = FG..y,
+    FGA_prac = FGA.x,
+    FGA_game = FGA.y,
+    FGM_prac = FGM.x,
+    FGM_game = FGM.y,
+    'eFG%_prac' = eFG..x,
+    'eFG%_game' = eFG..y,
+    'Rim Makes_prac' = Rim.Makes.x,
+    'Rim Makes_game' = Rim.Makes.y,
+    'Rim Attempts_prac' = Rim.Attempts.x,
+    'Rim Attempts_game' = Rim.Attempts.y,
+    'Rim%_prac' = Rim..x,
+    'Rim%_game' = Rim..y,
+    'Rim Attempts per 100 FGA_prac' = Rim.Attempts.per.100.FGA.x,
+    'Rim Attempts per 100 FGA_game' = Rim.Attempts.per.100.FGA.y,
+    'Mid Makes_prac' = Mid.Makes.x,
+    'Mid Makes_game' = Mid.Makes.y,
+    'Mid Attempts_prac' = Mid.Attempts.x,
+    'Mid Attempts_game' = Mid.Attempts.y,
+    'Mid%_prac' = Mid..x,
+    'Mid%_game' = Mid..y,
+    'Mid Attempts per 100 FGA_prac' = Mid.Attempts.per.100.FGA.x,
+    'Mid Attempts per 100 FGA_game' = Mid.Attempts.per.100.FGA.y,
+    '2pt%_prac' = X2pt..x,
+    '2pt%_game' = X2pt..y,
+    '3pt Makes_prac' = X3pt.Makes.x,
+    '3pt Makes_game' = X3pt.Makes.y,
+    '3pt Attempts_prac' = X3pt.Attempts.x,
+    '3pt Attempts_game' = X3pt.Attempts.y,
+    '3pt%_prac' = X3pt..x,
+    '3pt%_game' = X3pt..y,
+    '3pt Attempts per 100 FGA_prac' = X3pt.Attempts.per.100.FGA.x,
+    '3pt Attempts per 100 FGA_game' = X3pt.Attempts.per.100.FGA.y,
+    'Off. Reb_prac' = Off..Reb.x,
+    'Off. Reb_game' = Off..Reb.y,
+    'Def. Reb_prac' = Def..Reb.x,
+    'Def. Reb_game' = Def..Reb.y,
+    Steals_prac = Steals.x,
+    Steals_game = Steals.y,
+    Blocks_prac = Blocks.x,
+    Blocks_game = Blocks.y,
+    Turnovers_prac = Turnovers.x,
+    Turnovers_game = Turnovers.y,
+    'Ast per 100 Tov_prac' = Ast.per.100.Tov.x,
+    'Ast per 100 Tov_game' = Ast.per.100.Tov.y,
+    'Ast per 100 FGA_prac' = Ast.per.100.FGA.x,
+    'Ast per 100 FGA_game' = Ast.per.100.FGA.y,
+    'Points per Shot_prac' = Points.per.Shot.x,
+    'Points per Shot_game' = Points.per.Shot.y
+  )
+write.csv(merged_data, 'Dumbbell Data.csv')
+
+# merged_data <- merged_data %>%
+#   rename(
+#     FG..x = 'FG%_prac',
+#     FG..y = 'FG%_game'
+#   )
+# ggplot(merged_data, aes(x = FG..x, xend = FG..y, y = Player)) +
+#   geom_dumbbell(aes(color = factor(sign(FG..y - FG..x))),
+#                 size = 2, size_x = 1, size_xend = 1) +
+#   geom_point(aes(x = FG..x, y = Player), color = "#000000", size = 3) +
+#   geom_point(aes(x = FG..y, y = Player), color = "#B1B3B3", size = 3) +
+#   #geom_text(aes(x = FG..x, y = Player, label = sprintf("%.1f", FG..x)), hjust = 1.5, vjust = -0.8, size = 3, fontface = 'italic') +
+#   #geom_text(aes(x = FG..y, y = Player, label = sprintf("%.1f", FG..y)), hjust = -0.6, vjust = -0.8, size = 3, fontface = 'italic') +
+#   geom_text(aes(x = (FG..x + FG..y) / 2, y = Player,
+#                 label = sprintf("%s%.1f", ifelse(FG..y - FG..x > 0, '+', ''), FG..y - FG..x)),
+#             vjust = -0.5, color = "black", fontface = 'bold', size = 3.8) +
+#   scale_color_manual(values = c("darkred", "forestgreen"), name = "Direction") +
+#   labs(title = "Stat\nPractice vs. Game",
+#        subtitle = "Black dot represents practice value. Gray dot represents game value.",
+#        x = "Value",
+#        y = "") +
+#   theme_minimal() +
+#   theme(
+#     plot.title = element_text(hjust = 0.5, face = 'bold', size = 15),
+#     plot.subtitle = element_text(hjust = 0.5, face = 'italic', size = 10),
+#     axis.text.y = element_text(face = 'bold', size = 10),
+#     axis.text.x = element_text(face = 'italic', size = 10),
+#     axis.title.x = element_text(face = 'bold'),
+#     legend.position = 'none'
+#   )
+```
+
+#player ones
+```{r}
+#necessary columns
+
+# player_data <- merged_data[,c(1,5,8,11,12,15,16,17,20,21,27,28,29,33,36,39,40,43,44,45,48,49,55,56,57)]
+# 
+# player_data_plot <- player_data %>%
+#   filter(Player == 'Keon Thompson')
+# 
+# player_data_plot <- data.frame(Stat = c('FG%', 'eFG%', 'Rim%', 'Rim Attempts per 100 FGA', 'Mid%', 'Mid Attempts per 100 FGA', '2pt%', '3pt%', '3pt Attempts per 100 FGA', 'Ast per 100 TOV', 'Ast per 100 FGA', 'Points per Shot'),
+#                                Practice = c(player_data_plot$`FG%_prac`, player_data_plot$`eFG%_prac`, player_data_plot$`Rim%_prac`, player_data_plot$`Rim Attempts per 100 FGA_prac`, player_data_plot$`Mid%_prac`, player_data_plot$`Mid Attempts per 100 FGA_prac`, player_data_plot$`2pt%_prac`, player_data_plot$`3pt%_prac`, player_data_plot$`3pt Attempts per 100 FGA_prac`, player_data_plot$`Ast per 100 Tov_prac`, player_data_plot$`Ast per 100 FGA_prac`, player_data_plot$`Points per Shot_prac`),
+#                                Game = c(player_data_plot$`FG%_game`, player_data_plot$`eFG%_game`, player_data_plot$`Rim%_game`, player_data_plot$`Rim Attempts per 100 FGA_game`, player_data_plot$`Mid%_game`, player_data_plot$`Mid Attempts per 100 FGA_game`, player_data_plot$`2pt%_game`, player_data_plot$`3pt%_game`, player_data_plot$`3pt Attempts per 100 FGA_game`, player_data_plot$`Ast per 100 Tov_game`, player_data_plot$`Ast per 100 FGA_game`, player_data_plot$`Points per Shot_game`))
+# 
+# ggplot(player_data_plot, aes(x = Practice, xend = Game, y = Stat)) +
+#   geom_dumbbell(aes(color = factor(sign(Game - Practice))),
+#                 size = 2, size_x = 1, size_xend = 1) +
+#   geom_point(aes(x = Practice, y = Stat), color = "#000000", size = 3) +
+#   geom_point(aes(x = Game, y = Stat), color = "#B1B3B3", size = 3) +
+#   #geom_text(aes(x = Practice, y = Stat, label = sprintf("%.1f", Practice)), hjust = 1.5, vjust = -0.8, size = 3, fontface = 'italic') +
+#   #geom_text(aes(x = Game, y = Stat, label = sprintf("%.1f", Game)), hjust = -0.6, vjust = -0.8, size = 3, fontface = 'italic') +
+#   geom_text(aes(x = (Practice + Game) / 2, y = Stat,
+#                 label = sprintf("%s%.1f", ifelse(Game - Practice > 0, '+', ''), Game - Practice)),
+#             vjust = -0.5, color = "black", fontface = 'bold', size = 3.8) +
+#   scale_color_manual(values = c("darkred", "forestgreen", 'forestgreen'), name = "Direction") +
+#   labs(title = "Stat\nPractice vs. Game",
+#        subtitle = "Black dot represents practice value. Gray dot represents game value.",
+#        x = "Value",
+#        y = "") +
+#   theme_minimal() +
+#   theme(
+#     plot.title = element_text(hjust = 0.5, face = 'bold', size = 15),
+#     plot.subtitle = element_text(hjust = 0.5, face = 'italic', size = 10),
+#     axis.text.y = element_text(face = 'bold', size = 10),
+#     axis.text.x = element_text(face = 'italic', size = 10),
+#     axis.title.x = element_text(face = 'bold'),
+#     legend.position = 'none'
+#   )
+```
+
+#full team
+```{r}
+# team_data_plot <- data.frame(
+#   Stat = c('FG%', 'eFG%', 'Rim%', 'Rim Attempts per 100 FGA', 'Mid%', 'Mid Attempts per 100 FGA', '2pt%', '3pt%', '3pt Attempts per 100 FGA', 'Ast per 100 TOV', 'Ast per 100 FGA', 'Points per Shot'),
+#   Practice = c(round((sum(merged_data$FGM_prac)/sum(merged_data$FGA_prac))*100,1), round(((sum(merged_data$FGM_prac)+(0.5*sum(merged_data$`3pt Makes_prac`)))/sum(merged_data$FGA_prac))*100,1), round((sum(merged_data$`Rim Makes_prac`)/sum(merged_data$`Rim Attempts_prac`))*100,1), round((sum(merged_data$`Rim Attempts_prac`)/sum(merged_data$FGA_prac))*100,1), round((sum(merged_data$`Mid Makes_prac`)/sum(merged_data$`Mid Attempts_prac`))*100,1), round((sum(merged_data$`Mid Attempts_prac`)/sum(merged_data$FGA_prac))*100,1), round(((sum(merged_data$`Rim Makes_prac`)+sum(merged_data$`Mid Makes_prac`))/(sum(merged_data$`Rim Attempts_prac`)+sum(merged_data$`Mid Attempts_prac`)))*100,1), round((sum(merged_data$`3pt Makes_prac`)/sum(merged_data$`3pt Attempts_prac`))*100,1), round((sum(merged_data$`3pt Attempts_prac`)/sum(merged_data$FGA_prac))*100,1), round((sum(merged_data$Assists_prac)/sum(merged_data$Turnovers_prac))*100,1), round((sum(merged_data$Assists_prac)/sum(merged_data$FGA_prac))*100,1), round((sum(merged_data$Points_prac)/sum(merged_data$FGA_prac))*100,1)),
+#   Game = c(round((sum(merged_data$FGM_game)/sum(merged_data$FGA_game))*100,1), round(((sum(merged_data$FGM_game)+(0.5*sum(merged_data$`3pt Makes_game`)))/sum(merged_data$FGA_game))*100,1), round((sum(merged_data$`Rim Makes_game`)/sum(merged_data$`Rim Attempts_game`))*100,1), round((sum(merged_data$`Rim Attempts_game`)/sum(merged_data$FGA_game))*100,1), round((sum(merged_data$`Mid Makes_game`)/sum(merged_data$`Mid Attempts_game`))*100,1), round((sum(merged_data$`Mid Attempts_game`)/sum(merged_data$FGA_game))*100,1), round(((sum(merged_data$`Rim Makes_game`)+sum(merged_data$`Mid Makes_game`))/(sum(merged_data$`Rim Attempts_game`)+sum(merged_data$`Mid Attempts_game`)))*100,1), round((sum(merged_data$`3pt Makes_game`)/sum(merged_data$`3pt Attempts_game`))*100,1), round((sum(merged_data$`3pt Attempts_game`)/sum(merged_data$FGA_game))*100,1), round((sum(merged_data$Assists_game)/sum(merged_data$Turnovers_game))*100,1), round((sum(merged_data$Assists_game)/sum(merged_data$FGA_game))*100,1), round((sum(merged_data$Points_game)/sum(merged_data$FGA_game))*100,1))
+# )
+# 
+# ggplot(team_data_plot, aes(x = Practice, xend = Game, y = Stat)) +
+#   geom_dumbbell(aes(color = factor(sign(Game - Practice))),
+#                 size = 2, size_x = 1, size_xend = 1) +
+#   geom_point(aes(x = Practice, y = Stat), color = "#000000", size = 3) +
+#   geom_point(aes(x = Game, y = Stat), color = "#B1B3B3", size = 3) +
+#   #geom_text(aes(x = Practice, y = Stat, label = sprintf("%.1f", Practice)), hjust = 1.5, vjust = -0.8, size = 3, fontface = 'italic') +
+#   #geom_text(aes(x = Game, y = Stat, label = sprintf("%.1f", Game)), hjust = -0.6, vjust = -0.8, size = 3, fontface = 'italic') +
+#   geom_text(aes(x = (Practice + Game) / 2, y = Stat,
+#                 label = sprintf("%s%.1f", ifelse(Game - Practice > 0, '+', ''), Game - Practice)),
+#             vjust = -0.5, color = "black", fontface = 'bold', size = 3.8) +
+#   scale_color_manual(values = c("darkred", "forestgreen", 'forestgreen'), name = "Direction") +
+#   labs(title = "Stat\nPractice vs. Game",
+#        subtitle = "Black dot represents practice value. Gray dot represents game value.",
+#        x = "Value",
+#        y = "") +
+#   theme_minimal() +
+#   theme(
+#     plot.title = element_text(hjust = 0.5, face = 'bold', size = 15),
+#     plot.subtitle = element_text(hjust = 0.5, face = 'italic', size = 10),
+#     axis.text.y = element_text(face = 'bold', size = 10),
+#     axis.text.x = element_text(face = 'italic', size = 10),
+#     axis.title.x = element_text(face = 'bold'),
+#     legend.position = 'none'
+#   )
+```
+

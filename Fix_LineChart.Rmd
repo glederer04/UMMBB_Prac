@@ -1,0 +1,81 @@
+---
+title: "Fix_LineChart"
+author: "Greg"
+date: "2023-12-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/UMassPractice23-24")
+```
+
+#packages
+```{r}
+library(dplyr)
+library(tidyverse)
+```
+
+#fix
+```{r}
+# Matt <- read.csv('Matt Cross | Practice Progress.csv')
+# Matt <- Matt[-(1:10),-1]
+# write.csv(Matt, 'Matt Cross | Practice Progress.csv')
+
+# Team <- read.csv('Full Team | Practice Progress.csv')
+# Team <- Team[-(1:10),-1]
+# write.csv(Team, 'Full Team | Practice Progress.csv')
+# 
+# Rollie <- read.csv('Rollie Castineyra | Practice Progress.csv')
+# Rollie <- Rollie[-(1:10),-1]
+# write.csv(Rollie, 'Rollie Castineyra | Practice Progress.csv')
+# 
+# Josh <- read.csv('Josh Cohen | Practice Progress.csv')
+# Josh <- Josh[-(1:10),-1]
+# write.csv(Josh, 'Josh Cohen | Practice Progress.csv')
+# 
+# Jackson <- read.csv('Jackson Cronin | Practice Progress.csv')
+# Jackson <- Jackson[-(1:10),-1]
+# write.csv(Jackson, 'Jackson Cronin | Practice Progress.csv')
+# 
+# Jaylen <- read.csv('Jaylen Curry | Practice Progress.csv')
+# Jaylen <- Jaylen[-(1:10),-1]
+# write.csv(Jaylen, 'Jaylen Curry | Practice Progress.csv')
+# 
+# Rob <- read.csv('Robert Davis Jr. | Practice Progress.csv')
+# Rob <- Rob[-(1:10),-1]
+# write.csv(Rob, 'Robert Davis Jr. | Practice Progress.csv')
+# 
+# Sool <- read.csv('Rahsool Diggins | Practice Progress.csv')
+# Sool <- Sool[-(1:10),-1]
+# write.csv(Sool, 'Rahsool Diggins | Practice Progress.csv')
+# 
+# Tarique <- read.csv('Tarique Foster | Practice Progress.csv')
+# Tarique <- Tarique[-(1:10),-1]
+# write.csv(Tarique, 'Tarique Foster | Practice Progress.csv')
+# 
+# Dan <- read.csv('Daniel Hankins-Sanford | Practice Progress.csv')
+# Dan <- Dan[-(1:19),-1]
+# write.csv(Dan, 'Daniel Hankins-Sanford | Practice Progress.csv')
+# 
+# Mathok <- read.csv('Mathok Majok | Practice Progress.csv')
+# Mathok <- Mathok[-(1:10),-1]
+# write.csv(Mathok, 'Mathok Majok | Practice Progress.csv')
+# 
+# Ryan <- read.csv('Ryan Marcus | Practice Progress.csv')
+# Ryan <- Ryan[-(1:10),-1]
+# write.csv(Ryan, 'Ryan Marcus | Practice Progress.csv')
+# 
+# Jayden <- read.csv('Jayden Ndjigue | Practice Progress.csv')
+# Jayden <- Jayden[-(1:10),-1]
+# write.csv(Jayden, 'Jayden Ndjigue | Practice Progress.csv')
+# 
+# Keon <- read.csv('Keon Thompson | Practice Progress.csv')
+# Keon <- Keon[-(1:10),-1]
+# write.csv(Keon, 'Keon Thompson | Practice Progress.csv')
+# 
+# Marqui <- read.csv('Marqui Worthy | Practice Progress.csv')
+# Marqui <- Marqui[-(1:10),-1]
+# write.csv(Marqui, 'Marqui Worthy | Practice Progress.csv')
+```
+

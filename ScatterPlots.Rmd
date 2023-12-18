@@ -1,0 +1,121 @@
+---
+title: "ScatterPlots"
+author: "Greg"
+date: "2023-11-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/UMassPractice23-24")
+```
+
+#packages
+```{r}
+library(tidyverse)
+library(dplyr)
+library(fmsb)
+library(ggplot2)
+```
+
+#data
+```{r}
+full_data <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/23-24 Practice Stat Sheet - Grand Totals.csv')
+```
+
+#fix data
+```{r}
+possessions <- full_data$X.1[19]
+
+df <- full_data[2:16,]
+
+df <- df %>%
+  rename(
+    Player = X,
+    Points = Shooting,
+    Rim_Make = X.1,
+    Rim_Miss = X.2,
+    Mid_Make = X.3,
+    Mid_Miss = X.4,
+    Three_Make = X.5,
+    Three_Miss = X.6,
+    Off_Reb = Rebounding,
+    Def_Reb = X.7,
+    Ast = Misc.,
+    Stl = X.8,
+    Blk = X.9,
+    Tov = X.10,
+    Charges = X.11,
+    Fouls = X.12
+  )
+
+df$Points <- as.numeric(df$Points)
+df$Rim_Make <- as.numeric(df$Rim_Make)
+df$Rim_Miss <- as.numeric(df$Rim_Miss)
+df$Mid_Make <- as.numeric(df$Mid_Make)
+df$Mid_Miss <- as.numeric(df$Mid_Miss)
+df$Three_Make <- as.numeric(df$Three_Make)
+df$Three_Miss <- as.numeric(df$Three_Miss)
+df$Off_Reb <- as.numeric(df$Off_Reb)
+df$Def_Reb <- as.numeric(df$Def_Reb)
+df$Ast <- as.numeric(df$Ast)
+df$Stl <- as.numeric(df$Stl)
+df$Blk <- as.numeric(df$Blk)
+df$Tov <- as.numeric(df$Tov)
+df$Charges <- as.numeric(df$Charges)
+df$Fouls <- as.numeric(df$Fouls)
+```
+
+#add columns
+```{r}
+df <- df %>%
+  mutate(
+    'FG%' = round(as.numeric((Rim_Make+Mid_Make+Three_Make)/(Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss))*100,1),
+    FGA = (Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss),
+    FGM = (Rim_Make+Mid_Make+Three_Make),
+    'eFG%' = round(as.numeric(((Rim_Make+Mid_Make+Three_Make)+(0.5*Three_Make))/(Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss))*100,1),
+    'Rim%' = round(as.numeric(Rim_Make/(Rim_Make+Rim_Miss))*100,1),
+    'Rim Attempts per 100 FGA' = round(as.numeric((Rim_Make+Rim_Miss)/(Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss))*100,1),
+    'Mid%' = round(as.numeric(Mid_Make/(Mid_Make+Mid_Miss))*100,1),
+    'Mid Attempts per 100 FGA' = round(as.numeric((Mid_Make+Mid_Miss)/(Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss))*100,1),
+    '2pt%' = round(as.numeric((Rim_Make+Mid_Make)/(Rim_Make+Mid_Make+Rim_Miss+Mid_Miss))*100,1),
+    '3pt%' = round(as.numeric(Three_Make/(Three_Make+Three_Miss))*100,1),
+    '3pt Attempts per 100 FGA' = round(as.numeric((Three_Make+Three_Miss)/(Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss))*100,1),
+    'Ast per 100 Tov' = round(as.numeric(Ast/Tov)*100,1),
+    'Ast per 100 FGA' = round(as.numeric(Ast/(Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss))*100,1),
+    'Points per Shot' = round(as.numeric(Points/(Rim_Make+Mid_Make+Three_Make+Rim_Miss+Mid_Miss+Three_Miss))*100,1),
+    'Rebounds' = Off_Reb + Def_Reb,
+    'Rim Attempts' = Rim_Make + Rim_Miss,
+    'Mid Attempts' = Mid_Make + Mid_Miss,
+    '3pt Attempts' = Three_Make + Three_Miss
+  ) %>%
+  rename(
+    Assists = Ast,
+    'Rim Makes' = Rim_Make,
+    'Mid Makes' = Mid_Make,
+    '3pt Makes' = Three_Make,
+    'Off. Reb' = Off_Reb,
+    'Def. Reb' = Def_Reb,
+    Steals = Stl,
+    Blocks = Blk,
+    Turnovers = Tov
+  ) %>%
+  select(Player, Points, Rebounds, Assists, 'FG%', FGA, FGM, 'eFG%', 'Rim Makes', 'Rim Attempts', 'Rim%', 'Rim Attempts per 100 FGA', 'Mid Makes', 'Mid Attempts', 'Mid%', 'Mid Attempts per 100 FGA', '2pt%', '3pt Makes', '3pt Attempts', '3pt%', '3pt Attempts per 100 FGA', 'Off. Reb', 'Def. Reb', 'Steals', 'Blocks', 'Turnovers', 'Charges', 'Fouls', 'Ast per 100 Tov', 'Ast per 100 FGA', 'Points per Shot')
+```
+
+#scatter plot
+```{r}
+df <- df[-12,]
+df$identity <- c(paste0('RC\n44'), paste0('JC\n23'), paste0('JC\n22'), paste0('MC\n33'), paste0('JC\n2'), paste0('RD\n4'), paste0('RD\n3'), paste0('TF\n12'), paste0('DHS\n1'), paste0('MM\n34'), paste0('RM\n20'), paste0('JN\n11'), paste0('KT\n5'), paste0('MW\n10'))
+
+ plot <- ggplot(df, aes(x = Points, y = Rebounds)) + 
+  geom_point(size = 2) +
+  geom_text(aes(label = identity), hjust = 0.5, vjust = -0.5, size = 3) +
+  labs(title = 'test',
+       x = 'points',
+       y = 'rebounds',
+       color = 'player') + 
+  theme_minimal()
+plot
+```
+

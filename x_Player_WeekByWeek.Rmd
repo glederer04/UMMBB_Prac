@@ -1,0 +1,185 @@
+---
+title: "Player_WeekByWeek"
+author: "Greg"
+date: "2023-11-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/UMassPractice23-24")
+setwd("~/Desktop/UMass Basketball/Shiny/Reactable Prac/UMassPractice23-24")
+```
+
+#packages
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+#data
+```{r}
+weeks <- c('9/11 - 9/17', '9/18 - 9/24', '9/25 - 10/1', '10/2 - 10/8', '10/9 - 10/15', '10/16 - 10/22', '10/23 - 10/29', '10/30 - 11/5', '11/6 - 11/12', '11/13 - 11/19', '11/20 - 11/26', '11/27 - 12/3', '12/4 - 12/10', '12/11 - 12/17')
+
+week14 <- read.csv('12.11 - 12.17 | Practice Stats.csv')
+week13 <- read.csv('12.4 - 12.10 | Practice Stats.csv')
+week12 <- read.csv('11.27 - 12.3 | Practice Stats.csv')
+week11 <- read.csv('11.20 - 11.26 | Practice Stats.csv')
+week10 <- read.csv('11.13 - 11.19 | Practice Stats.csv')
+week9 <- read.csv('11.06 - 11.12 | Practice Stats.csv')
+week8 <- read.csv('10.30 - 11.05 | Practice Stats.csv')
+week7 <- read.csv('10.23 - 10.29 | Practice Stats.csv')
+week6 <- read.csv('10.16 - 10.22 | Practice Stats.csv')
+week5 <- read.csv('10.9 - 10.15 | Practice Stats.csv')
+week4 <- read.csv('10.2 - 10.8 | Practice Stats.csv')
+week3 <- read.csv('9.25 - 10.1 | Practice Stats.csv')
+week2 <- read.csv('9.18 - 9.24 | Practice Stats.csv')
+week1 <- read.csv('9.11 - 9.17 | Practice Stats.csv')
+```
+
+#fix
+```{r}
+fix_df <- function(df) {
+  df <- df[,-c(1:2)]
+  rim_values <- strsplit(df$Rim, '/')
+  df$rim_m <- as.numeric(sapply(rim_values, "[[", 1))
+  df$rim_a <- as.numeric(sapply(rim_values, "[[", 2))
+  mid_values <- strsplit(df$Mid, '/')
+  df$mid_m <- as.numeric(sapply(mid_values, "[[", 1))
+  df$mid_a <- as.numeric(sapply(mid_values, "[[", 2))
+  three_values <- strsplit(df$Three, '/')
+  df$three_m <- as.numeric(sapply(three_values, "[[", 1))
+  df$three_a <- as.numeric(sapply(three_values, "[[", 2))
+  df <- df[,c(-5,-7,-9)]
+  df <- df %>%
+    mutate(
+      FGM = rim_m + mid_m + three_m,
+      FGA = rim_a + mid_a + three_a
+    )
+  df <- df %>%
+    mutate(
+      'FG.' = round(as.numeric(FGM/FGA)*100,1),
+      'eFG.' = round(as.numeric((FGM+(0.5*three_m))/FGA)*100,1),
+      'Rim.Attempts.per.100.FGA' = round(as.numeric(rim_a/FGA)*100,1),
+      'Mid.Attempts.per.100.FGA' = round(as.numeric(mid_a/FGA)*100,1),
+      'X3pt.Attempts.per.100.FGA' = round(as.numeric(three_a/FGA)*100,1),
+      'X2pt.' = round(as.numeric((rim_m+mid_m)/(rim_a+mid_a))*100,1),
+      'Ast.per.100.Tov' = round(as.numeric(Ast/Tov)*100,1),
+      'Ast.per.100.FGA' = round(as.numeric(Ast/FGA)*100,1),
+      'Points.per.Shot' = round(as.numeric(Pts/FGA),1)
+    )
+  df[is.na(df)] = 0
+  return(df)
+}
+week14 <- fix_df(week14)
+week13 <- fix_df(week13)
+week12 <- fix_df(week12)
+week11 <- fix_df(week11)
+week10 <- fix_df(week10)
+week9 <- fix_df(week9)
+week8 <- fix_df(week8)
+week7 <- fix_df(week7)
+week6 <- fix_df(week6)
+week5 <- fix_df(week5)
+week4 <- fix_df(week4)
+week3 <- fix_df(week3)
+week2 <- fix_df(week2)
+week1 <- fix_df(week1)
+```
+
+#combine and save
+```{r}
+
+week14 <- week14[,-1]
+
+Rollie <- read.csv('Rollie Castineyra | Week by Week.csv')
+Rollie <- Rollie[,-c(1,32)]
+Rollie <- rbind(Rollie, week14[1,])
+Rollie$Week <- weeks
+write.csv(Rollie, 'Rollie Castineyra | Week by Week.csv')
+
+Josh <- read.csv('Josh Cohen | Week by Week.csv')
+Josh <- Josh[,-c(1,32)]
+Josh <- rbind(Josh, week14[2,])
+Josh$Week <- weeks
+write.csv(Josh, 'Josh Cohen | Week by Week.csv')
+
+Jackson <- read.csv('Jackson Cronin | Week by Week.csv')
+Jackson <- Jackson[,-c(1,32)]
+Jackson <- rbind(Jackson, week14[3,])
+Jackson$Week <- weeks
+write.csv(Jackson, 'Jackson Cronin | Week by Week.csv')
+
+Matt <- read.csv('Matt Cross | Week by Week.csv')
+Matt <- Matt[,-c(1,32)]
+Matt <- rbind(Matt, week14[4,])
+Matt$Week <- weeks
+write.csv(Matt, 'Matt Cross | Week by Week.csv')
+
+Jaylen <- read.csv('Jaylen Curry | Week by Week.csv')
+Jaylen <- Jaylen[,-c(1,32)]
+Jaylen <- rbind(Jaylen, week14[5,])
+Jaylen$Week <- weeks
+write.csv(Jaylen, 'Jaylen Curry | Week by Week.csv')
+
+Rob <- read.csv('Robert Davis Jr. | Week by Week.csv')
+Rob <- Rob[,-c(1,32)]
+Rob <- rbind(Rob, week14[6,])
+Rob$Week <- weeks
+write.csv(Rob, 'Robert Davis Jr. | Week by Week.csv')
+
+Sool <- read.csv('Rahsool Diggins | Week by Week.csv')
+Sool <- Sool[,-c(1,32)]
+Sool <- rbind(Sool, week14[7,])
+Sool$Week <- weeks
+write.csv(Sool, 'Rahsool Diggins | Week by Week.csv')
+
+Tarique <- read.csv('Tarique Foster | Week by Week.csv')
+Tarique <- Tarique[,-c(1,32)]
+Tarique <- rbind(Tarique, week14[8,])
+Tarique$Week <- weeks
+write.csv(Tarique, 'Tarique Foster | Week by Week.csv')
+
+Dan <- read.csv('Daniel Hankins-Sanford | Week by Week.csv')
+Dan <- Dan[,-c(1,32)]
+Dan <- rbind(Dan, week14[9,])
+Dan$Week <- weeks
+write.csv(Dan, 'Daniel Hankins-Sanford | Week by Week.csv')
+
+Mathok <- read.csv('Mathok Majok | Week by Week.csv')
+Mathok <- Mathok[,-c(1,32)]
+Mathok <- rbind(Mathok, week14[10,])
+Mathok$Week <- weeks
+write.csv(Mathok, 'Mathok Majok | Week by Week.csv')
+
+Ryan <- read.csv('Ryan Marcus | Week by Week.csv')
+Ryan <- Ryan[,-c(1,32)]
+Ryan <- rbind(Ryan, week14[11,])
+Ryan$Week <- weeks
+write.csv(Ryan, 'Ryan Marcus | Week by Week.csv')
+
+Jayden <- read.csv('Jayden Ndjigue | Week by Week.csv')
+Jayden <- Jayden[,-c(1,32)]
+Jayden <- rbind(Jayden, week14[13,])
+Jayden$Week <- weeks
+write.csv(Jayden, 'Jayden Ndjigue | Week by Week.csv')
+
+Keon <- read.csv('Keon Thompson | Week by Week.csv')
+Keon <- Keon[,-c(1,32)]
+Keon <- rbind(Keon, week14[14,])
+Keon$Week <- weeks
+write.csv(Keon, 'Keon Thompson | Week by Week.csv')
+
+Marqui <- read.csv('Marqui Worthy | Week by Week.csv')
+Marqui <- Marqui[,-c(1,32)]
+Marqui <- rbind(Marqui, week14[15,])
+Marqui$Week <- weeks
+write.csv(Marqui, 'Marqui Worthy | Week by Week.csv')
+
+Team <- read.csv('Full Team | Week by Week.csv')
+Team <- Team[,-c(1,32)]
+Team <- rbind(Team, week14[16,])
+Team$Week <- weeks
+write.csv(Team, 'Full Team | Week by Week.csv')
+```
+
