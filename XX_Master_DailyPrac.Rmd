@@ -34,6 +34,15 @@ save_name2 <- paste0(format(Sys.Date(), format = "%Y-%m-%d"), ' | Basic Practice
 table_subtitle <- paste0(format(Sys.Date(), format="%B %d, %Y"), " | Complete Totals")
 save_name3 <- paste0(format(Sys.Date(), format = "%Y-%m-%d"), ' | Frank Totals.png')
 table_subtitle1 <- paste0(format(Sys.Date(), format="%B %d, %Y"), " | Complete Totals")
+
+# save_name_csv <- paste0('01-05-2024 | Practice Stats.csv')
+# save_name_csv2 <- paste0('01-05-2024 | Practice Stats2.csv')
+# save_name1 <- paste0('2024-01-05 | Complete Practice Totals.png')
+# save_name2 <- paste0('2024-01-05 | Basic Practice Totals.png')
+# table_subtitle <- paste0("January 5, 2024 | Complete Totals")
+# save_name3 <- paste0('2024-01-05 | Frank Totals.png')
+# table_subtitle1 <- paste0("January 5, 2024 | Complete Totals")
+
 total_data <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/23-24 Practice Stat Sheet - Grand Totals.csv')
 possessions_total <- total_data$X.1[19]
 table_subtitle2 <- paste0("Full Season | Complete Totals")

@@ -27,7 +27,7 @@ library(gtExtras)
 
 #week
 ```{r}
-week <- '12.11 - 12.17'
+week <- '01.01 - 01.07'
 ```
 
 #reactable

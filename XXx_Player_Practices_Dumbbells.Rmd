@@ -31,10 +31,17 @@ library(ggalt)
 
 #read data
 ```{r} 
-game_ids <- c('5563339', '5569050', '5571845', '5575711', '5581138', '5583867', '5584950', '5588219')
+#game_ids <- c('5563339', '5569050', '5571845', '5575711', '5581138', '5583867', '5584950', '5588219', '5590296', '5590499', '5590575')
 player_names <- c('Daniel Hankins-Sanford', 'Jayden Ndjigue', 'Jaylen Curry', 'Josh Cohen', 'Keon Thompson', 'Marqui Worthy', 'Mathok Majok', 'Matt Cross', 'Rahsool Diggins', 'Robert Davis Jr.', 'Rollie Castineyra', 'Ryan Marcus', 'Tarique Foster')
 not_played_yet <- 'Jackson Cronin'
+not_played_yet2 <- 'Tyler Mason'
 #data here
+data57 <- read.csv('01-06-2024 | Practice Stats.csv')
+data56 <- read.csv('01-05-2024 | Practice Stats.csv')
+data55 <- read.csv('01-02-2024 | Practice Stats.csv')
+data54 <- read.csv('01-01-2024 | Practice Stats.csv')
+data53 <- read.csv('12-29-2023 | Practice Stats.csv')
+data52 <- read.csv('12-28-2023 | Practice Stats.csv')
 data51 <- read.csv('12-15-2023 | Practice Stats.csv')
 data50 <- read.csv('12-14-2023 | Practice Stats.csv')
 data49 <- read.csv('12-13-2023 | Practice Stats.csv')
@@ -107,6 +114,12 @@ fix_df <- function(df) {
 }
 
 #add here
+data57 <- fix_df(data57)
+data56 <- fix_df(data56)
+data55 <- fix_df(data55)
+data54 <- fix_df(data54)
+data53 <- fix_df(data53)
+data52 <- fix_df(data52)
 data51 <- fix_df(data51)
 data50 <- fix_df(data50)
 data49 <- fix_df(data49)
@@ -209,71 +222,71 @@ function1 <- function(df) {
 ```{r}
 #change data name up 1 all in here
 
-data51 <- function1(data51)
+data57 <- function1(data57)
 
 Rollie <- read.csv('Rollie Castineyra | Practice Progress.csv')
 Rollie <- Rollie[,-1]
-Rollie <- rbind(Rollie, (data51[1,]+tail(Rollie,1)))
+Rollie <- rbind(Rollie, (data57[1,]+tail(Rollie,1)))
 
 Josh <- read.csv('Josh Cohen | Practice Progress.csv')
 Josh <- Josh[,-1]
-Josh <- rbind(Josh, (data51[2,]+tail(Josh,1)))
+Josh <- rbind(Josh, (data57[2,]+tail(Josh,1)))
 
 Jackson <- read.csv('Jackson Cronin | Practice Progress.csv')
 Jackson <- Jackson[,-1]
-Jackson <- rbind(Jackson, (data51[3,]+tail(Jackson,1)))
+Jackson <- rbind(Jackson, (data57[3,]+tail(Jackson,1)))
 
 Matt <- read.csv('Matt Cross | Practice Progress.csv')
 Matt <- Matt[,-1]
-Matt <- rbind(Matt, (data51[4,]+tail(Matt,1)))
+Matt <- rbind(Matt, (data57[4,]+tail(Matt,1)))
 
 Jaylen <- read.csv('Jaylen Curry | Practice Progress.csv')
 Jaylen <- Jaylen[,-1]
-Jaylen <- rbind(Jaylen, (data51[5,]+tail(Jaylen,1)))
+Jaylen <- rbind(Jaylen, (data57[5,]+tail(Jaylen,1)))
 
 Rob <- read.csv('Robert Davis Jr. | Practice Progress.csv')
 Rob <- Rob[,-1]
-Rob <- rbind(Rob, (data51[6,]+tail(Rob,1)))
+Rob <- rbind(Rob, (data57[6,]+tail(Rob,1)))
 
 Sool <- read.csv('Rahsool Diggins | Practice Progress.csv')
 Sool <- Sool[,-1]
-Sool <- rbind(Sool, (data51[7,]+tail(Sool,1)))
+Sool <- rbind(Sool, (data57[7,]+tail(Sool,1)))
 
 Tarique <- read.csv('Tarique Foster | Practice Progress.csv')
 Tarique <- Tarique[,-1]
-Tarique <- rbind(Tarique, (data51[8,]+tail(Tarique,1)))
+Tarique <- rbind(Tarique, (data57[8,]+tail(Tarique,1)))
 
 Dan <- read.csv('Daniel Hankins-Sanford | Practice Progress.csv')
 Dan <- Dan[,-1]
-Dan <- rbind(Dan, (data51[9,]+tail(Dan,1)))
+Dan <- rbind(Dan, (data57[9,]+tail(Dan,1)))
 
 Mathok <- read.csv('Mathok Majok | Practice Progress.csv')
 Mathok <- Mathok[,-1]
-Mathok <- rbind(Mathok, (data51[10,]+tail(Mathok,1)))
+Mathok <- rbind(Mathok, (data57[10,]+tail(Mathok,1)))
 
 Ryan <- read.csv('Ryan Marcus | Practice Progress.csv')
 Ryan <- Ryan[,-1]
-Ryan <- rbind(Ryan, (data51[11,]+tail(Ryan,1)))
+Ryan <- rbind(Ryan, (data57[11,]+tail(Ryan,1)))
 
-Tyler <- read.csv('Sawyer Mayhugh | Practice Progress.csv')
+Tyler <- read.csv('Tyler Mason | Practice Progress.csv')
 Tyler <- Tyler[,-1]
-Tyler <- rbind(Tyler, (data51[12,]+tail(Tyler,1)))
+Tyler <- rbind(Tyler, (data57[12,]+tail(Tyler,1)))
 
 Jayden <- read.csv('Jayden Ndjigue | Practice Progress.csv')
 Jayden <- Jayden[,-1]
-Jayden <- rbind(Jayden, (data51[13,]+tail(Jayden,1)))
+Jayden <- rbind(Jayden, (data57[13,]+tail(Jayden,1)))
 
 Keon <- read.csv('Keon Thompson | Practice Progress.csv')
 Keon <- Keon[,-1]
-Keon <- rbind(Keon, (data51[14,]+tail(Keon,1)))
+Keon <- rbind(Keon, (data57[14,]+tail(Keon,1)))
 
 Marqui <- read.csv('Marqui Worthy | Practice Progress.csv')
 Marqui <- Marqui[,-1]
-Marqui <- rbind(Marqui, (data51[15,]+tail(Marqui,1)))
+Marqui <- rbind(Marqui, (data57[15,]+tail(Marqui,1)))
 
 Total <- read.csv('Full Team | Practice Progress.csv')
 Total <- Total[,-1]
-Total <- rbind(Total, (data51[16,]+tail(Total,1)))
+Total <- rbind(Total, (data57[16,]+tail(Total,1)))
 ```
 
 #finishing function
@@ -377,7 +390,8 @@ write.csv(all_players, 'Players | Practice Totals.csv')
 #dumbbells
 ```{r}
 practice <- read.csv('/Users/gregorylederer/Desktop/UMass Basketball/Shiny/Reactable Prac/UMassPractice23-24/Team Totals.csv')
-game <- get_player_stats(play_by_play_data = get_play_by_play(game_ids = game_ids), multi.games = T, simple = F)
+schedule <- get_team_schedule(team.name = 'Massachusetts', season = '2023-24')
+game <- get_player_stats(play_by_play_data = get_play_by_play(game_ids = schedule$Game_ID), multi.games = T, simple = F)
 
 practice <- practice[,-1]
 practice <- practice[,-c(27:28)]
@@ -390,6 +404,12 @@ game$Player <- player_names
 #--
 for (i in 1:nrow(practice)) {
   if (not_played_yet == practice$Player[i]) {
+    practice <- practice[-i,]
+    return(practice)
+  }
+}
+for (i in 1:nrow(practice)) {
+  if (not_played_yet2 == practice$Player[i]) {
     practice <- practice[-i,]
     return(practice)
   }

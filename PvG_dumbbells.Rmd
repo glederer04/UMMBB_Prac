@@ -27,7 +27,7 @@ library(ggalt)
 
 #get data
 ```{r}
-game_ids <- c('5563339', '5569050', '5571845', '5575711', '5581138', '5583867', '5584950', '5588219')
+game_ids <- c('5563339', '5569050', '5571845', '5575711', '5581138', '5583867', '5584950', '5588219', '5590296', '5590499', '5590575')
 player_names <- c('Daniel Hankins-Sanford', 'Jayden Ndjigue', 'Jaylen Curry', 'Josh Cohen', 'Keon Thompson', 'Marqui Worthy', 'Mathok Majok', 'Matt Cross', 'Rahsool Diggins', 'Robert Davis Jr.', 'Rollie Castineyra', 'Ryan Marcus', 'Tarique Foster')
 not_played_yet <- 'Jackson Cronin'
 

@@ -19,8 +19,10 @@ library(dplyr)
 
 #data
 ```{r}
-weeks <- c('9/11 - 9/17', '9/18 - 9/24', '9/25 - 10/1', '10/2 - 10/8', '10/9 - 10/15', '10/16 - 10/22', '10/23 - 10/29', '10/30 - 11/5', '11/6 - 11/12', '11/13 - 11/19', '11/20 - 11/26', '11/27 - 12/3', '12/4 - 12/10', '12/11 - 12/17')
+weeks <- c('9/11 - 9/17', '9/18 - 9/24', '9/25 - 10/1', '10/2 - 10/8', '10/9 - 10/15', '10/16 - 10/22', '10/23 - 10/29', '10/30 - 11/5', '11/6 - 11/12', '11/13 - 11/19', '11/20 - 11/26', '11/27 - 12/3', '12/4 - 12/10', '12/11 - 12/17', '12/25 - 12/31', '01/01 - 01/07')
 
+week16 <- read.csv('01.01 - 01.07 | Practice Stats.csv')
+week15 <- read.csv('12.25 - 12.31 | Practice Stats.csv')
 week14 <- read.csv('12.11 - 12.17 | Practice Stats.csv')
 week13 <- read.csv('12.4 - 12.10 | Practice Stats.csv')
 week12 <- read.csv('11.27 - 12.3 | Practice Stats.csv')
@@ -71,6 +73,8 @@ fix_df <- function(df) {
   df[is.na(df)] = 0
   return(df)
 }
+week16 <- fix_df(week16)
+week15 <- fix_df(week15)
 week14 <- fix_df(week14)
 week13 <- fix_df(week13)
 week12 <- fix_df(week12)
@@ -90,95 +94,101 @@ week1 <- fix_df(week1)
 #combine and save
 ```{r}
 
-week14 <- week14[,-1]
+week16 <- week16[,-1]
 
 Rollie <- read.csv('Rollie Castineyra | Week by Week.csv')
 Rollie <- Rollie[,-c(1,32)]
-Rollie <- rbind(Rollie, week14[1,])
+Rollie <- rbind(Rollie, week16[1,])
 Rollie$Week <- weeks
 write.csv(Rollie, 'Rollie Castineyra | Week by Week.csv')
 
 Josh <- read.csv('Josh Cohen | Week by Week.csv')
 Josh <- Josh[,-c(1,32)]
-Josh <- rbind(Josh, week14[2,])
+Josh <- rbind(Josh, week16[2,])
 Josh$Week <- weeks
 write.csv(Josh, 'Josh Cohen | Week by Week.csv')
 
 Jackson <- read.csv('Jackson Cronin | Week by Week.csv')
 Jackson <- Jackson[,-c(1,32)]
-Jackson <- rbind(Jackson, week14[3,])
+Jackson <- rbind(Jackson, week16[3,])
 Jackson$Week <- weeks
 write.csv(Jackson, 'Jackson Cronin | Week by Week.csv')
 
 Matt <- read.csv('Matt Cross | Week by Week.csv')
 Matt <- Matt[,-c(1,32)]
-Matt <- rbind(Matt, week14[4,])
+Matt <- rbind(Matt, week16[4,])
 Matt$Week <- weeks
 write.csv(Matt, 'Matt Cross | Week by Week.csv')
 
 Jaylen <- read.csv('Jaylen Curry | Week by Week.csv')
 Jaylen <- Jaylen[,-c(1,32)]
-Jaylen <- rbind(Jaylen, week14[5,])
+Jaylen <- rbind(Jaylen, week16[5,])
 Jaylen$Week <- weeks
 write.csv(Jaylen, 'Jaylen Curry | Week by Week.csv')
 
 Rob <- read.csv('Robert Davis Jr. | Week by Week.csv')
 Rob <- Rob[,-c(1,32)]
-Rob <- rbind(Rob, week14[6,])
+Rob <- rbind(Rob, week16[6,])
 Rob$Week <- weeks
 write.csv(Rob, 'Robert Davis Jr. | Week by Week.csv')
 
 Sool <- read.csv('Rahsool Diggins | Week by Week.csv')
 Sool <- Sool[,-c(1,32)]
-Sool <- rbind(Sool, week14[7,])
+Sool <- rbind(Sool, week16[7,])
 Sool$Week <- weeks
 write.csv(Sool, 'Rahsool Diggins | Week by Week.csv')
 
 Tarique <- read.csv('Tarique Foster | Week by Week.csv')
 Tarique <- Tarique[,-c(1,32)]
-Tarique <- rbind(Tarique, week14[8,])
+Tarique <- rbind(Tarique, week16[8,])
 Tarique$Week <- weeks
 write.csv(Tarique, 'Tarique Foster | Week by Week.csv')
 
 Dan <- read.csv('Daniel Hankins-Sanford | Week by Week.csv')
 Dan <- Dan[,-c(1,32)]
-Dan <- rbind(Dan, week14[9,])
+Dan <- rbind(Dan, week16[9,])
 Dan$Week <- weeks
 write.csv(Dan, 'Daniel Hankins-Sanford | Week by Week.csv')
 
 Mathok <- read.csv('Mathok Majok | Week by Week.csv')
 Mathok <- Mathok[,-c(1,32)]
-Mathok <- rbind(Mathok, week14[10,])
+Mathok <- rbind(Mathok, week16[10,])
 Mathok$Week <- weeks
 write.csv(Mathok, 'Mathok Majok | Week by Week.csv')
 
 Ryan <- read.csv('Ryan Marcus | Week by Week.csv')
 Ryan <- Ryan[,-c(1,32)]
-Ryan <- rbind(Ryan, week14[11,])
+Ryan <- rbind(Ryan, week16[11,])
 Ryan$Week <- weeks
 write.csv(Ryan, 'Ryan Marcus | Week by Week.csv')
 
+Tyler <- read.csv('Tyler Mason | Week by Week.csv')
+Tyler <- Tyler[,-c(1,32)]
+Tyler <- rbind(Tyler, week16[12,])
+#Tyler$Week <- weeks
+write.csv(Tyler, 'Tyler Mason | Week by Week.csv')
+
 Jayden <- read.csv('Jayden Ndjigue | Week by Week.csv')
 Jayden <- Jayden[,-c(1,32)]
-Jayden <- rbind(Jayden, week14[13,])
+Jayden <- rbind(Jayden, week16[13,])
 Jayden$Week <- weeks
 write.csv(Jayden, 'Jayden Ndjigue | Week by Week.csv')
 
 Keon <- read.csv('Keon Thompson | Week by Week.csv')
 Keon <- Keon[,-c(1,32)]
-Keon <- rbind(Keon, week14[14,])
+Keon <- rbind(Keon, week16[14,])
 Keon$Week <- weeks
 write.csv(Keon, 'Keon Thompson | Week by Week.csv')
 
 Marqui <- read.csv('Marqui Worthy | Week by Week.csv')
 Marqui <- Marqui[,-c(1,32)]
-Marqui <- rbind(Marqui, week14[15,])
+Marqui <- rbind(Marqui, week16[15,])
 Marqui$Week <- weeks
 write.csv(Marqui, 'Marqui Worthy | Week by Week.csv')
 
 Team <- read.csv('Full Team | Week by Week.csv')
 Team <- Team[,-c(1,32)]
-Team <- rbind(Team, week14[16,])
+Team <- rbind(Team, week16[16,])
 Team$Week <- weeks
 write.csv(Team, 'Full Team | Week by Week.csv')
 ```
